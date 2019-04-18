@@ -1,0 +1,16 @@
+/** Just testing Jenkins
+ * @file
+ * Subtheme specific CSS.
+ */
+ #block-mainnavigation-2 ul#superfish-main {width: 72em; }
+ #block-mainnavigation-2 ul#superfish-main > li { width: 14em; }
+ #block-mainnavigation-2 ul#superfish-main > li,#block-mainnavigation-2 ul#superfish-main li.sf-depth-1.menuparent ul,#block-mainnavigation-2 ul#superfish-main li.sf-depth-1.menuparent ul li {
+     background-color: #fff;
+    }
+    #block-mainnavigation-2 ul#superfish-main li.sf-depth-1.menuparent{ height: 4em; }
+    .node--type-interagency-group #block-mpte-boot4-content h3 {font-size: 1.3em; margin-top: 0.7em;}
+    .node--type-interagency-group #block-mpte-boot4-content .field--name-field-other-partnerships-specify {margin-top: -1em;}
+    .node--type-interagency-group a[href="/taxonomy/term/404"] {display: none;}
+    label[for="partnerships-General-education-staff-including-guidance-counselors"] {width: 75%;}
+    .view-search-content ul li {font-size: 1.2em; padding: .4em 0;}
+    
