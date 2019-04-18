@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "788caa32ca76be8fb628f76e6a90be0c",
+    "content-hash": "3253ad45b46455f03b65438c32a8a4c3",
     "packages": [
         {
             "name": "alchemy/zippy",
@@ -3700,8 +3700,7 @@
             "homepage": "https://www.drupal.org/project/csv_importer",
             "support": {
                 "source": "https://git.drupalcode.org/project/csv_importer"
-            },
-            "time": "2019-04-14T10:45:53+00:00"
+            }
         },
         {
             "name": "drupal/csv_serialization",
@@ -4463,14 +4462,20 @@
         },
         {
             "name": "drupal/feeds",
-            "version": "dev-3.x",
+            "version": "3.0.0-alpha4",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/feeds.git",
-                "reference": "83a27c8f78065c1e540739bf7f919cb5c9187365"
+                "reference": "8.x-3.0-alpha4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://ftp.drupal.org/files/projects/feeds-8.x-3.0-alpha4.zip",
+                "reference": "8.x-3.0-alpha4",
+                "shasum": "3d1ff885e2f85bb0da5d5421466ec26a29ee0857"
             },
             "require": {
-                "drupal/core": "^8.5.0"
+                "drupal/core": "^8.3.0"
             },
             "type": "drupal-module",
             "extra": {
@@ -4478,8 +4483,8 @@
                     "dev-3.x": "3.x-dev"
                 },
                 "drupal": {
-                    "version": "8.x-3.0-alpha4+19-dev",
-                    "datestamp": "1555357381",
+                    "version": "8.x-3.0-alpha4",
+                    "datestamp": "1546264264",
                     "security-coverage": {
                         "status": "not-covered",
                         "message": "Project has not opted into security advisory coverage!"
@@ -4556,8 +4561,7 @@
             "support": {
                 "source": "http://cgit.drupalcode.org/feeds",
                 "issues": "https://www.drupal.org/project/issues/feeds"
-            },
-            "time": "2019-04-15T20:14:05+00:00"
+            }
         },
         {
             "name": "drupal/field_group",
@@ -13049,7 +13053,7 @@
         "drupal/email_registration": 5,
         "drupal/entity_usage": 15,
         "drupal/fapi_validation": 15,
-        "drupal/feeds": 20,
+        "drupal/feeds": 15,
         "drupal/mailgun": 10,
         "drupal/nodeaccess": 10,
         "drupal/page_manager": 10,
