@@ -41,11 +41,11 @@ use Twig\TokenParser\TokenParserInterface;
  */
 class Environment
 {
-    const VERSION = '1.39.0';
-    const VERSION_ID = 13900;
+    const VERSION = '1.39.1';
+    const VERSION_ID = 13901;
     const MAJOR_VERSION = 1;
     const MINOR_VERSION = 39;
-    const RELEASE_VERSION = 0;
+    const RELEASE_VERSION = 1;
     const EXTRA_VERSION = '';
 
     protected $charset;
@@ -470,6 +470,7 @@ class Environment
                 $this->cache->load($key);
             }
 
+            $source = null;
             if (!class_exists($cls, false)) {
                 $loader = $this->getLoader();
                 if (!$loader instanceof SourceContextLoaderInterface) {
