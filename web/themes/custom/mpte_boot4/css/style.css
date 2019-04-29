@@ -42,6 +42,7 @@
         #superfish-main > li {min-width: 200px; border:2px solid white;}
       
     }
+    #superfish-main > li  > a {text-transform: uppercase; }
    
 
     
