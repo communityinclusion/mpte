@@ -34,12 +34,15 @@
     #superfish-main > li:nth-child(4) > a:hover {color: white;}
     #superfish-main > li:nth-child(5) > a {background-color: #3976B8; color:white;}
     .lilright {padding-left:3em;}
-    #superfish-main > li {min-width: 200px; border:2px solid white;}
+    #superfish-main > li {min-width: 180px; border:2px solid white;}
+    a.navbar-brand { width: 150px; height: 150px; float: left;} 
+    h1#siteTitle {width: 60%; float: left; margin-top: 20px; margin-bottom: 15px;}
+    h3.site-name-slogan {margin-bottom: 40px;}
   }
     
     /* Large devices (desktops, 992px and up) */
     @media (min-width: 992px) { 
-        #superfish-main > li {min-width: 200px; border:2px solid white;}
+        #superfish-main > li {min-width: 180px; border:2px solid white;}
       
     }
     #superfish-main > li  > a {text-transform: uppercase; }
