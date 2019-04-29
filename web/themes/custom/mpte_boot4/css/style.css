@@ -13,4 +13,35 @@
     .node--type-interagency-group a[href="/taxonomy/term/404"] {display: none;}
     label[for="partnerships-General-education-staff-including-guidance-counselors"] {width: 75%;}
     .view-search-content ul li {font-size: 1.2em; padding: .4em 0;}
+    @media only screen and (min-width: 768px) {
+
+        .navbar-collapse.collapse {
+          display: block !important;
+        }
+    .collapse:not(.show) {
+
+        display: block;
+    
+    }
+}
+#superfish-main ul {background-color: #fff; }
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) {
+    #superfish-main > li:nth-child(1) > a {color:white; background-color:#A5D48F;}
+    #superfish-main > li:nth-child(2) > a {color:white; background-color:#D26716;}
+    #superfish-main > li:nth-child(3) > a {color:white; background-color:#8665AB;}
+    #superfish-main > li:nth-child(4) > a {color:white; background-color:#00A6A5;}
+    #superfish-main > li:nth-child(4) > a:hover {color: white;}
+    #superfish-main > li:nth-child(5) > a {background-color: #3976B8; color:white;}
+    .lilright {padding-left:3em;}
+    #superfish-main > li {min-width: 200px; border:2px solid white;}
+  }
+    
+    /* Large devices (desktops, 992px and up) */
+    @media (min-width: 992px) { 
+        #superfish-main > li {min-width: 200px; border:2px solid white;}
+      
+    }
+   
+
     
