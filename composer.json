@@ -64,7 +64,7 @@
         "drupal/ctools": "^3.2",
         "drupal/devel": "^2.0",
         "drupal/ds": "^3.2",
-        "drupal/email_registration": "^1.0@RC",
+        "drupal/email_registration": "1.x-dev",
         "drupal/entity_browser": "^2.1",
         "drupal/entity_usage": "^2.0@alpha",
         "drupal/facets": "^1.3",
