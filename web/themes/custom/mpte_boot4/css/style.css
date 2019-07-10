@@ -48,5 +48,6 @@
     #superfish-main > li  > a {text-transform: uppercase; }
 
    #block-schooldistricts .distNote { font-size: 85%; font-style: italic; }
+   label[for="partnerships-General-education-staff-including-guidance-counselors"] { display: block; padding-left: 22px; margin-top: -24px;}
 
     
