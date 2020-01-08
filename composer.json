@@ -75,6 +75,7 @@
         "drupal/google_analytics": "^3.0",
         "drupal/imce": "^1.7",
         "drupal/mailgun": "^1.0@beta",
+        "drupal/memcache": "^2.0",
         "drupal/menu_block": "^1.5",
         "drupal/menu_breadcrumb": "^1.8",
         "drupal/migrate_plus": "^4.1",
