@@ -138,7 +138,6 @@ function create_taxonomy($voc_name)
 					$term = Term::create(array(
 					'parent' => array($parent),
 					'name' => $data[0],
-					'description' => $data[2], // Hack PF, to import term descriptions. from https://www.drupal.org/project/taxonomy_import/issues/3016805
 					'vid' => $vid,
 					 ))->save();
 				}

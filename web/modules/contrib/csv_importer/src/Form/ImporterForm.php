@@ -340,7 +340,7 @@ class ImporterForm extends FormBase {
         '#items' => $required,
       ];
 
-      drupal_set_message($this->t('Your CSV has missing required fields: @fields', ['@fields' => $this->renderer->render($render)]), 'error');
+      $this->messenger()->addError($this->t('Your CSV has missing required fields: @fields', ['@fields' => $this->renderer->render($render)]));
     }
     else {
       $this->importer->createInstance($form_state->getUserInput()['plugin_id'], [
