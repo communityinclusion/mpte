@@ -35,7 +35,7 @@
     #superfish-main > li:nth-child(5) > a {background-color: #3976B8; color:white;}
     .lilright {padding-left:3em;}
     #superfish-main > li {min-width: 180px; border:2px solid white;}
-    a.navbar-brand { width: 150px; height: 150px; float: left;} 
+  
     h1#siteTitle {width: 60%; float: left; margin-top: 20px; margin-bottom: 15px;}
     h3.site-name-slogan {margin-bottom: 40px;}
   }
@@ -49,5 +49,6 @@
 
    #block-schooldistricts .distNote { font-size: 85%; font-style: italic; }
    label[for="partnerships-General-education-staff-including-guidance-counselors"],label[for="partners-General-education-staff-including-guidance-counselors"] { display: block; padding-left: 22px; margin-top: -24px;}
+   header a.navbar-brand { margin-top: 18px; width: 250px;float: left;}
 
     

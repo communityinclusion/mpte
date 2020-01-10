@@ -14,9 +14,9 @@
 #}
 {% set attributes = attributes.addClass('site-branding') %}
   {% if site_logo or site_name %}
-    <a href="https://employmentfirstma.org" title="{{ 'Home'|t }}" rel="home" class="navbar-brand" width="250">
+    <a href="https://employmentfirstma.org" title="{{ 'Home'|t }}" rel="home" class="navbar-brand" >
       {% if site_logo %}
-        <img src="/sites/default/files/mitt.png" alt="{{ 'Home'|t }}" class="img-fluid d-inline-block align-top" />
+        <img src="/sites/default/files/mitt.png" alt="{{ 'Home'|t }}" class="img-fluid d-inline-block align-top" width="250" />
       {% endif %}
       
     </a><h1 id="siteTitle">{{ site_name }}</h1>
