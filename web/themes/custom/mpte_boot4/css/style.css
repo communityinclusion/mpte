@@ -51,5 +51,7 @@
    label[for="partnerships-General-education-staff-including-guidance-counselors"],label[for="partners-General-education-staff-including-guidance-counselors"] { display: block; padding-left: 22px; margin-top: -24px;}
    header a.navbar-brand { margin-top: 18px; width: 250px;float: left;}
    #confJump {margin: 10px; padding: 12px; border: 1px solid grey;}
+   #sidebar_first ul {list-style: none;}
+   #sidebar_first ul li label { padding-left: 4px; max-width: 235px;} 
 
     
