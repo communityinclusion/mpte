@@ -52,6 +52,7 @@
    header a.navbar-brand { margin-top: 18px; width: 250px;float: left;}
    #confJump {margin: 10px; padding: 12px; border: 1px solid grey;}
    #sidebar_first ul {list-style: none;}
-   #sidebar_first ul li label { padding-left: 4px; max-width: 235px;} 
+   #sidebar_first ul li label{ padding-left: 4px; max-width: 230px; } 
+   #sidebar_first ul li label span {  height: 18px; overflow: visible;} 
 
     
