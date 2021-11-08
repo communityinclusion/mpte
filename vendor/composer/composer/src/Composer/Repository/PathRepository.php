@@ -20,6 +20,9 @@ use Composer\Package\Version\VersionGuesser;
 use Composer\Package\Version\VersionParser;
 use Composer\Util\Platform;
 use Composer\Util\ProcessExecutor;
+use Composer\Util\Filesystem;
+use Composer\Util\Url;
+use Composer\Util\Git as GitUtil;
 
 /**
  * This repository allows installing local packages that are not necessarily under their own VCS.
@@ -74,7 +77,8 @@ class PathRepository extends ArrayRepository implements ConfigurableRepositoryIn
     private $url;
 
     /**
-     * @var array
+     * @var mixed[]
+     * @phpstan-var array{url: string, options?: array{symlink?: bool, relative?: bool, versions?: array<string, string>}}
      */
     private $repoConfig;
 
@@ -84,14 +88,14 @@ class PathRepository extends ArrayRepository implements ConfigurableRepositoryIn
     private $process;
 
     /**
-     * @var array
+     * @var array{symlink?: bool, relative?: bool, versions?: array<string, string>}
      */
     private $options;
 
     /**
      * Initializes path repository.
      *
-     * @param array       $repoConfig
+     * @param array{url: string, options?: array{symlink?: bool, relative?: bool, versions?: array<string, string>}} $repoConfig
      * @param IOInterface $io
      * @param Config      $config
      */
@@ -107,8 +111,17 @@ class PathRepository extends ArrayRepository implements ConfigurableRepositoryIn
         $this->versionGuesser = new VersionGuesser($config, $this->process, new VersionParser());
         $this->repoConfig = $repoConfig;
         $this->options = isset($repoConfig['options']) ? $repoConfig['options'] : array();
+        if (!isset($this->options['relative'])) {
+            $filesystem = new Filesystem();
+            $this->options['relative'] = !$filesystem->isAbsolutePath($this->url);
+        }
 
         parent::__construct();
+    }
+
+    public function getRepoName()
+    {
+        return 'path repo ('.Url::sanitize($this->repoConfig['url']).')';
     }
 
     public function getRepoConfig()
@@ -158,6 +171,12 @@ class PathRepository extends ArrayRepository implements ConfigurableRepositoryIn
                 'reference' => sha1($json . serialize($this->options)),
             );
             $package['transport-options'] = $this->options;
+            unset($package['transport-options']['versions']);
+
+            // use the version provided as option if available
+            if (isset($package['name'], $this->options['versions'][$package['name']])) {
+                $package['version'] = $this->options['versions'][$package['name']];
+            }
 
             // carry over the root package version if this path repo is in the same git repository as root package
             if (!isset($package['version']) && ($rootVersion = getenv('COMPOSER_ROOT_VERSION'))) {
@@ -171,7 +190,7 @@ class PathRepository extends ArrayRepository implements ConfigurableRepositoryIn
             }
 
             $output = '';
-            if (is_dir($path . DIRECTORY_SEPARATOR . '.git') && 0 === $this->process->execute('git log -n1 --pretty=%H', $output, $path)) {
+            if (is_dir($path . DIRECTORY_SEPARATOR . '.git') && 0 === $this->process->execute('git log -n1 --pretty=%H'.GitUtil::getNoShowSignatureFlag($this->process), $output, $path)) {
                 $package['dist']['reference'] = trim($output);
             }
 

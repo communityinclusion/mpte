@@ -81,18 +81,17 @@ class EmailRegistrationLogin extends Login {
     $pane_form = parent::buildPaneForm($pane_form, $form_state, $complete_form);
 
     $login_with_username = $this->config->get('login_with_username');
-
-    $pane_form['returning_customer']['name']['#title'] = $login_with_username ? t('Email address or username') : t('Email address');
-    $pane_form['returning_customer']['name']['#description'] = $login_with_username ? t('Enter your email address or username.') : t('Enter your email address.');
+    $pane_form['returning_customer']['name']['#title'] = $login_with_username ? $this->t('Email address or username') : $this->t('Email address');
+    $pane_form['returning_customer']['name']['#description'] = $login_with_username ? $this->t('Enter your email address or username.') : $this->t('Enter your email address.');
     $pane_form['returning_customer']['name']['#element_validate'][] = 'email_registration_user_login_validate';
     $pane_form['returning_customer']['name']['#type'] = $login_with_username ? 'textfield' : 'email';
     $pane_form['returning_customer']['name']['#maxlength'] = Email::EMAIL_MAX_LENGTH;
-    $pane_form['returning_customer']['password']['#description'] = t('Enter the password that accompanies your email address.');
+    $pane_form['returning_customer']['password']['#description'] = $this->t('Enter the password that accompanies your email address.');
     $complete_form['#cache']['tags'][] = 'config:email_registration.settings';
 
     $pane_form['register']['name']['#type'] = 'value';
     $pane_form['register']['name']['#value'] = 'email_registration_' . user_password();
-    $pane_form['register']['mail']['#title'] = t('Email');
+    $pane_form['register']['mail']['#title'] = $this->t('Email');
 
     return $pane_form;
   }
@@ -155,7 +154,7 @@ class EmailRegistrationLogin extends Login {
           $this->credentialsCheckFlood->register($this->clientIp, $username);
           // Changing the wrong credentials error message.
           if (!$this->config->get('login_with_username')) {
-            $form_state->setError($name_element, $this->t('Unrecognized email address or password. <a href=":password">Forgot your password?</a>', [':url' => $password_url]));
+            $form_state->setError($name_element, $this->t('Unrecognized email address or password. <a href=":password">Forgot your password?</a>', [':password' => $password_url]));
             // Adding return to avoid the parent error when password is empty.
             return;
           }

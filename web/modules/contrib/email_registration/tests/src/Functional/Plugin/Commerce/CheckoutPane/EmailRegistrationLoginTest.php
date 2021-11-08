@@ -125,7 +125,7 @@ class EmailRegistrationLoginTest extends CommerceBrowserTestBase {
     $this->assertSession()->pageTextContains('Email address or username');
 
     $edit = [
-      'email_registration_login[returning_customer][name]' => $account->getUsername(),
+      'email_registration_login[returning_customer][name]' => $account->getAccountName(),
       'email_registration_login[returning_customer][password]' => $account->passRaw,
     ];
     $this->submitForm($edit, 'Log in');
@@ -180,7 +180,7 @@ class EmailRegistrationLoginTest extends CommerceBrowserTestBase {
     $this->assertSession()->pageTextContains('Enter your email address.');
 
     $edit = [
-      'email_registration_login[returning_customer][name]' => $account->getUsername(),
+      'email_registration_login[returning_customer][name]' => $account->getAccountName(),
       'email_registration_login[returning_customer][password]' => $account->passRaw,
     ];
     $this->submitForm($edit, 'Log in');

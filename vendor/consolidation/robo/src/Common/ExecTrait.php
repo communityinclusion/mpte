@@ -70,13 +70,13 @@ trait ExecTrait
      * @see \Robo\Common\ProgressIndicatorAwareTrait
      * @see \Robo\Common\Timer
      */
-    abstract public function startTimer();
+    abstract protected function startTimer();
 
     /**
      * @see \Robo\Common\ProgressIndicatorAwareTrait
      * @see \Robo\Common\Timer
      */
-    abstract public function stopTimer();
+    abstract protected function stopTimer();
 
     /**
      * @return null|float
@@ -84,21 +84,21 @@ trait ExecTrait
      * @see \Robo\Common\ProgressIndicatorAwareTrait
      * @see \Robo\Common\Timer
      */
-    abstract public function getExecutionTime();
+    abstract protected function getExecutionTime();
 
     /**
      * @return bool
      *
      * @see \Robo\Common\TaskIO
      */
-    abstract public function hideTaskProgress();
+    abstract protected function hideTaskProgress();
 
     /**
      * @param bool $inProgress
      *
      * @see \Robo\Common\TaskIO
      */
-    abstract public function showTaskProgress($inProgress);
+    abstract protected function showTaskProgress($inProgress);
 
     /**
      * @param string $text
@@ -106,7 +106,7 @@ trait ExecTrait
      *
      * @see \Robo\Common\TaskIO
      */
-    abstract public function printTaskInfo($text, $context = null);
+    abstract protected function printTaskInfo($text, $context = null);
 
     /**
      * @return bool
@@ -369,11 +369,13 @@ trait ExecTrait
             $this->process->run();
             $this->stopTimer();
             $output = rtrim($this->process->getOutput());
-            return new ResultData(
+            $result = new ResultData(
                 $this->process->getExitCode(),
                 $output,
                 $this->getResultData()
             );
+            $result->provideOutputdata();
+            return $result;
         }
 
         if (!$this->background && $this->isPrinted) {

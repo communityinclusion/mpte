@@ -15,6 +15,8 @@ abstract class EntityUsageJavascriptTestBase extends WebDriverTestBase {
    * {@inheritdoc}
    */
   protected static $modules = [
+    'image',
+    'media',
     'node',
     'field_ui',
     'system',
@@ -23,6 +25,11 @@ abstract class EntityUsageJavascriptTestBase extends WebDriverTestBase {
     'entity_usage',
     'entity_usage_test',
   ];
+
+  /**
+   * {@inheritdoc}
+   */
+  protected $defaultTheme = 'stark';
 
   /**
    * {@inheritdoc}

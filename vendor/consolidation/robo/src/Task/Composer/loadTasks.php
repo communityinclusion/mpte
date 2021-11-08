@@ -1,4 +1,5 @@
 <?php
+
 namespace Robo\Task\Composer;
 
 trait loadTasks
@@ -91,5 +92,15 @@ trait loadTasks
     protected function taskComposerCreateProject($pathToComposer = null)
     {
         return $this->task(CreateProject::class, $pathToComposer);
+    }
+
+    /**
+     * @param null|string $pathToComposer
+     *
+     * @return \Robo\Task\Composer\CreateProject|\Robo\Collection\CollectionBuilder
+     */
+    protected function taskCheckPlatformReqs($pathToComposer = null)
+    {
+        return $this->task(CheckPlatformReqs::class, $pathToComposer);
     }
 }

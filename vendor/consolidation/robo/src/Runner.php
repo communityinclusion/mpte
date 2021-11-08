@@ -1,4 +1,5 @@
 <?php
+
 namespace Robo;
 
 use Composer\Autoload\ClassLoader;
@@ -11,14 +12,15 @@ use Robo\Exception\TaskExitException;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
 use Consolidation\Config\Util\EnvConfig;
+use Symfony\Component\Console\Output\NullOutput;
 
 class Runner implements ContainerAwareInterface
 {
-    const ROBOCLASS = 'RoboFile';
-    const ROBOFILE = 'RoboFile.php';
-
     use IO;
     use ContainerAwareTrait;
+
+    const ROBOCLASS = 'RoboFile';
+    const ROBOFILE = 'RoboFile.php';
 
     /**
      * @var string
@@ -156,6 +158,43 @@ class Runner implements ContainerAwareInterface
     }
 
     /**
+     * Return an initialized application loaded with specified commands and configuration.
+     *
+     * This should ONLY be used for testing purposes. Works well in conjunction with Symfony's CommandTester.
+     *
+     * @see https://symfony.com/doc/current/console.html#testing-commands
+     * @see CommandTestertTest
+     * @see CommandTesterTrait
+     *
+     * @param string|null $appName
+     *   Name of the application.
+     * @param string|null $appVersion
+     *   Version of the application.
+     * @param string|array|null $commandFile
+     *   Name of the specific command file, or array of commands, that should be included with the application.
+     * @param \Robo\Config\Config|null $config
+     *   Robo configuration to be used with the application.
+     * @param \Composer\Autoload\ClassLoader|null $classLoader
+     *   Class loader to use.
+     *
+     * @return \Robo\Application
+     *   Initialized application based on passed configuration and command classes.
+     */
+    public function getAppForTesting($appName = null, $appVersion = null, $commandFile = null, $config = null, $classLoader = null)
+    {
+        $app = Robo::createDefaultApplication($appName, $appVersion);
+        $output = new NullOutput();
+        $container = Robo::createDefaultContainer(null, $output, $app, $config, $classLoader);
+        if (!is_null($commandFile) && (is_array($commandFile) || is_string($commandFile))) {
+            if (is_string($commandFile)) {
+                $commandFile = [$commandFile];
+            }
+            $this->registerCommandClasses($app, $commandFile);
+        }
+        return $app;
+    }
+
+    /**
      * Get a list of locations where config files may be loaded
      *
      * @param string $userConfig
@@ -164,13 +203,20 @@ class Runner implements ContainerAwareInterface
      */
     protected function getConfigFilePaths($userConfig)
     {
+        // Look for application config at the root of the application.
+        // Find the root relative to this file, considering that Robo itself
+        // might be the application, or it might be in the `vendor` directory.
         $roboAppConfig = dirname(__DIR__) . '/' . basename($userConfig);
-        $configFiles = [$userConfig, $roboAppConfig];
+        if (basename(dirname(__DIR__, 3)) == 'vendor') {
+            $roboAppConfig = dirname(__DIR__, 4) . '/' . basename($userConfig);
+        }
+        $configFiles = [$roboAppConfig, $userConfig];
         if (dirname($userConfig) != '.') {
-            array_unshift($configFiles, basename($userConfig));
+            $configFiles[] = basename($userConfig);
         }
         return $configFiles;
     }
+
     /**
      * @param null|\Symfony\Component\Console\Input\InputInterface $input
      * @param null|\Symfony\Component\Console\Output\OutputInterface $output
@@ -279,7 +325,7 @@ class Runner implements ContainerAwareInterface
     {
         /** @var \Robo\ClassDiscovery\RelativeNamespaceDiscovery $discovery */
         $discovery = Robo::service('relativeNamespaceDiscovery');
-        $discovery->setRelativeNamespace($relativeNamespace.'\Commands')
+        $discovery->setRelativeNamespace($relativeNamespace . '\Commands')
             ->setSearchPattern('/.*Commands?\.php$/');
         return $discovery->getClasses();
     }
@@ -460,9 +506,9 @@ class Runner implements ContainerAwareInterface
 
         if (substr($argv[$pos], 0, 12) == '--load-from=') {
             $this->dir = substr($argv[$pos], 12);
-        } elseif (isset($argv[$pos +1])) {
-            $this->dir = $argv[$pos +1];
-            unset($argv[$pos +1]);
+        } elseif (isset($argv[$pos + 1])) {
+            $this->dir = $argv[$pos + 1];
+            unset($argv[$pos + 1]);
         }
         unset($argv[$pos]);
         // Make adjustments if '--load-from' points at a file.
