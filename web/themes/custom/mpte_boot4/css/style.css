@@ -1,6 +1,6 @@
-/** 
+/**
  * @file
- * Subtheme specific CSS. Jenkins push 2
+ * Subtheme specific CSS. Jenkins push 3
  */
  #block-mainnavigation-2 ul#superfish-main {width: 72em; }
  #block-mainnavigation-2 ul#superfish-main > li { width: 14em; }
@@ -21,7 +21,7 @@
     .collapse:not(.show) {
 
         display: block;
-    
+
     }
 }
 #superfish-main ul {background-color: #fff; }
@@ -35,15 +35,15 @@
     #superfish-main > li:nth-child(5) > a {background-color: #3976B8; color:white;}
     .lilright {padding-left:3em;}
     #superfish-main > li {min-width: 180px; border:2px solid white;}
-  
+
     h1#siteTitle {width: 60%; float: left; margin-top: 20px; margin-bottom: 15px;}
     h3.site-name-slogan {margin-bottom: 40px;}
   }
-    
+
     /* Large devices (desktops, 992px and up) */
-    @media (min-width: 992px) { 
+    @media (min-width: 992px) {
         #superfish-main > li {min-width: 180px; border:2px solid white;}
-      
+
     }
     #superfish-main > li  > a {text-transform: uppercase; }
 
@@ -52,8 +52,6 @@
    header a.navbar-brand { margin-top: 18px; width: 250px;float: left;}
    #confJump {margin: 10px; padding: 12px; border: 1px solid grey;}
    #sidebar_first ul {list-style: none;}
-   #sidebar_first ul li label{ margin-left: 4px; max-width: 230px; } 
-   
-   #sidebar_first ul li label span {  height: 18px; overflow: visible;} 
+   #sidebar_first ul li label{ margin-left: 4px; max-width: 230px; }
 
-    
+   #sidebar_first ul li label span {  height: 18px; overflow: visible;}
