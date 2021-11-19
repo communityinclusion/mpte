@@ -160,4 +160,93 @@ class EmailRegistrationTestCase extends BrowserTestBase {
     $this->assertSession()->pageTextContains($username);
   }
 
+  /**
+   * Tests the options to allow the username on registration.
+   */
+  public function testAllowUsernameRegistration() {
+    \Drupal::configFactory()->getEditable('user.settings')
+      ->set('verify_mail', FALSE)
+      ->set('register', UserInterface::REGISTER_VISITORS)
+      ->save();
+    \Drupal::configFactory()->getEditable('email_registration.settings')
+      ->set('require_username_on_registration', TRUE)
+      ->save();
+
+    $name = strtolower($this->randomMachineName());
+    $pass = $this->randomString();
+
+    $this->drupalGet('/user/register');
+    $assert_session = $this->assertSession();
+    $session = $this->getSession();
+    $page = $session->getPage();
+
+    $assert_session->fieldExists('Email');
+    $assert_session->fieldExists('Username');
+    $assert_session->fieldExists('Password');
+    $assert_session->fieldExists('Confirm password');
+
+    // Omit the username.
+    $page->fillField('Email', "$name@example.com");
+    $page->fillField('Password', $pass);
+    $page->fillField('Confirm password', $pass);
+    $page->pressButton('Create new account');
+
+    // Check that the username field is required.
+    $assert_session->pageTextContains('Username field is required.');
+
+    $page->fillField('Username', $name);
+    $page->fillField('Password', $pass);
+    $page->fillField('Confirm password', $pass);
+    $page->pressButton('Create new account');
+
+    $assert_session->pageTextContains('Registration successful. You are now logged in.');
+    $assert_session->pageTextContains($name);
+
+    // Extract the user ID from the current URL and load the user from backend.
+    preg_match('/(\d+)$/', $this->getSession()->getCurrentUrl(), $found);
+    $account = User::load($found[1]);
+
+    // Check that the name entered by the user has been assigned.
+    $this->assertEquals($name, $account->getAccountName());
+
+    // Log out.
+    $this->drupalGet('/user/logout');
+
+    // Check that the username is not present on the login form.
+    $assert_session->fieldNotExists('Username');
+
+    $page->fillField('Email', "$name@example.com");
+    $page->fillField('Password', $pass);
+    $page->pressButton('Log in');
+
+    // Check that the user is logged in.
+    $assert_session->pageTextContains($name);
+
+    \Drupal::configFactory()->getEditable('email_registration.settings')
+      ->set('login_with_username', TRUE)
+      ->save();
+
+    // Log out.
+    $this->drupalGet('/user/logout');
+
+    // Login with username.
+    $page->fillField('Email or username', $name);
+    $page->fillField('Password', $pass);
+    $page->pressButton('Log in');
+
+    // Check that the user is logged in.
+    $assert_session->pageTextContains($name);
+
+    // Log out.
+    $this->drupalGet('/user/logout');
+
+    // Login with email.
+    $page->fillField('Email or username', "$name@example.com");
+    $page->fillField('Password', $pass);
+    $page->pressButton('Log in');
+
+    // Check that the user is logged in.
+    $assert_session->pageTextContains($name);
+  }
+
 }
