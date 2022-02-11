@@ -5,7 +5,7 @@
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => 'b4a1b7d22cbc4789851903ac71dc3414cc3a6bff',
+        'reference' => '97978131f703fb74c3842e114c0458c52a04f482',
         'name' => 'drupal-composer/drupal-project',
         'dev' => true,
     ),
@@ -388,7 +388,7 @@
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => 'b4a1b7d22cbc4789851903ac71dc3414cc3a6bff',
+            'reference' => '97978131f703fb74c3842e114c0458c52a04f482',
             'dev_requirement' => false,
         ),
         'drupal/action' => array(
@@ -1045,6 +1045,15 @@
             'install_path' => __DIR__ . '/../../web/modules/contrib/google_analytics',
             'aliases' => array(),
             'reference' => '8.x-3.1',
+            'dev_requirement' => false,
+        ),
+        'drupal/google_tag' => array(
+            'pretty_version' => '1.4.0',
+            'version' => '1.4.0.0',
+            'type' => 'drupal-module',
+            'install_path' => __DIR__ . '/../../web/modules/contrib/google_tag',
+            'aliases' => array(),
+            'reference' => '8.x-1.4',
             'dev_requirement' => false,
         ),
         'drupal/hal' => array(
