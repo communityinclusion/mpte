@@ -376,14 +376,7 @@ class ExtraLinks extends DeriverBase implements ContainerDeriverInterface {
           'route_parameters' => ['menu' => $menu_id],
         ] + $base_plugin_definition;
         // Un-deletable menus.
-        $un_deletable_menus = [
-          'admin',
-          'devel',
-          'footer',
-          'main',
-          'tools',
-          'account',
-        ];
+        $un_deletable_menus = ['admin', 'devel', 'footer', 'main', 'tools', 'account'];
         if (!in_array($menu_id, $un_deletable_menus)) {
           $links['entity.menu.delete_form.' . $menu_id] = [
             'title' => $this->t('Delete'),
@@ -541,6 +534,15 @@ class ExtraLinks extends DeriverBase implements ContainerDeriverInterface {
         'parent' => 'entity.view.collection',
         'weight' => -5,
       ] + $base_plugin_definition;
+      $views = $this->entityTypeManager->getStorage('view')->loadMultiple();
+      foreach ($views as $view) {
+        $links['views_ui.' . $view->id()] = [
+          'title' => $view->label(),
+          'route_name' => 'entity.view.edit_form',
+          'route_parameters' => ['view' => $view->id()],
+          'parent' => 'entity.view.collection',
+        ] + $base_plugin_definition;
+      }
       $links['views_ui.field_list'] = [
         'title' => $this->t('Used in views'),
         'route_name' => 'views_ui.reports_fields',
