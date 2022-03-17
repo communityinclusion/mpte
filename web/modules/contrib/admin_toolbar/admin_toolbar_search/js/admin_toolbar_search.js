@@ -19,8 +19,7 @@
 
       var $self = this;
 
-      const elements = once('admin-toolbar-search', '#toolbar-bar', context);
-      $(elements).each(function () {
+      $('#toolbar-bar', context).once('admin-toolbar-search').each(function () {
         $self.links = [];
 
         var $searchTab = $(this).find('#admin-toolbar-search-tab')
