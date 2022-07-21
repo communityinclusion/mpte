@@ -53,11 +53,11 @@ class AdminToolbarToolsHelper implements TrustedCallbackInterface {
   }
 
   /**
-    * {@inheritdoc}
-    */
-   public static function trustedCallbacks() {
-     return ['localTasksTrayLazyBuilder'];
-   }
+   * {@inheritdoc}
+   */
+  public static function trustedCallbacks() {
+    return ['localTasksTrayLazyBuilder'];
+  }
 
   /**
    * Lazy builder callback for the admin_toolbar_local_tasks tray items.

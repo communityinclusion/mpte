@@ -2,8 +2,6 @@
 
 namespace Drupal\Tests\admin_toolbar\Functional;
 
-use Drupal\Core\Url;
-use Drupal\menu_link_content\Entity\MenuLinkContent;
 use Drupal\Tests\toolbar\Functional\ToolbarAdminMenuTest;
 
 /**
