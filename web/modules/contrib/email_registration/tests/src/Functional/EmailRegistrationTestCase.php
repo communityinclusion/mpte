@@ -18,7 +18,7 @@ class EmailRegistrationTestCase extends BrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['email_registration'];
+  protected static $modules = ['email_registration'];
 
   /**
    * {@inheritdoc}
@@ -43,14 +43,16 @@ class EmailRegistrationTestCase extends BrowserTestBase {
       'pass[pass1]' => $pass,
       'pass[pass2]' => $pass,
     ];
-    $this->drupalPostForm('/user/register', $register, 'Create new account');
+    $this->drupalGet('/user/register');
+    $this->submitForm($register, 'Create new account');
     $this->drupalLogout();
 
     $login = [
       'name' => $name . '@example.com',
       'pass' => $pass,
     ];
-    $this->drupalPostForm('user/login', $login, 'Log in');
+    $this->drupalGet('user/login');
+    $this->submitForm($login, 'Log in');
 
     // Really basic confirmation that the user was created and logged in.
     $this->assertSession()->responseContains('<title>' . $name . ' | Drupal</title>');
@@ -67,7 +69,7 @@ class EmailRegistrationTestCase extends BrowserTestBase {
       'name' => $name,
       'pass' => $pass,
     ];
-    $this->drupalPostForm('user/login', $login, 'Log in');
+    $this->submitForm($login, 'Log in');
     // When login_with_username is false, a user cannot login with just their
     // username.
     $this->assertSession()->responseContains('Unrecognized email address or password.');
@@ -77,7 +79,7 @@ class EmailRegistrationTestCase extends BrowserTestBase {
     $this->drupalGet('user/login');
     $this->assertSession()->responseContains('Enter your email address or username.');
     $this->assertSession()->responseContains('Email or username');
-    $this->drupalPostForm('user/login', $login, 'Log in');
+    $this->submitForm($login, 'Log in');
     // When login_with_username is true, a user can login with just their
     // username.
     $this->assertSession()->responseContains('<title>' . $name . ' | Drupal</title>');
@@ -93,7 +95,8 @@ class EmailRegistrationTestCase extends BrowserTestBase {
       'pass[pass1]' => $pass,
       'pass[pass2]' => $pass,
     ];
-    $this->drupalPostForm('/user/register', $register, 'Create new account');
+    $this->drupalGet('/user/register');
+    $this->submitForm($register, 'Create new account');
     // User properly created, immediately logged in.
     $this->assertSession()->responseContains('Registration successful. You are now logged in.');
 
@@ -114,7 +117,8 @@ class EmailRegistrationTestCase extends BrowserTestBase {
       'pass[pass1]' => $pass,
       'pass[pass2]' => $pass,
     ];
-    $this->drupalPostForm('/user/register', $register, 'Create new account');
+    $this->drupalGet('/user/register');
+    $this->submitForm($register, 'Create new account');
     $account = user_load_by_mail($register['mail']);
     $this->assertSame($next_unique_name, $account->getAccountName());
     $this->drupalLogout();
@@ -123,8 +127,9 @@ class EmailRegistrationTestCase extends BrowserTestBase {
     $user = $this->createUser();
     $name = $user->label();
     $this->drupalLogin($user);
-    $this->drupalPostForm('/user/' . $user->id() . '/edit', [], 'Save');
-    $this->assertEqual($name, User::load($user->id())->label(), 'Username should not change after empty edit.');
+    $this->drupalGet('/user/' . $user->id() . '/edit');
+    $this->submitForm([], 'Save');
+    $this->assertEquals($name, User::load($user->id())->label(), 'Username should not change after empty edit.');
     $this->drupalLogout();
     $this->drupalLogin($user);
     $this->assertSame($next_unique_name, $account->getAccountName());
@@ -156,7 +161,7 @@ class EmailRegistrationTestCase extends BrowserTestBase {
     $this->assertSession()->fieldNotExists('edit-name');
     $this->assertSession()->pageTextContains($username);
     // Make sure the email isn't changed on save.
-    $this->drupalPostForm('user/' . $user->id() . '/edit', [], 'Save');
+    $this->submitForm([], 'Save');
     $this->assertSession()->pageTextContains($username);
   }
 

@@ -218,6 +218,12 @@ class ExtraLinks extends DeriverBase implements ContainerDeriverInterface {
       'route_name' => 'entity.user_role.collection',
       'parent' => 'entity.user.collection',
     ] + $base_plugin_definition;
+    $links['user.logout'] = [
+      'title' => $this->t('Logout'),
+      'route_name' => 'user.logout',
+      'parent' => 'admin_toolbar_tools.help',
+      'weight' => 10,
+    ] + $base_plugin_definition;
     $links['user.role_add'] = [
       'title' => $this->t('Add role'),
       'route_name' => 'user.role_add',
