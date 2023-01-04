@@ -89,7 +89,7 @@
         "drupal/profile": "^1.1",
         "drupal/recaptcha": "^3.0",
         "drupal/scheduler": "^1.0",
-        "drupal/search_api": "^1.12",
+        "drupal/search_api": "^1.28",
         "drupal/search_api_db": "^1.12",
         "drupal/search_api_page": "^1.0@alpha",
         "drupal/simple_mail": "^2.0",
