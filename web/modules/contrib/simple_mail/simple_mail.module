@@ -43,16 +43,16 @@ function simple_mail_mail_alter(&$message) {
 /**
  * Easy-to-use email sending function.
  *
- * @param (string) $from
+ * @param string $from
  *   Email sender. Defaults to the system email.
- * @param (string) $to
+ * @param string $to
  *   Email receipient.
- * @param (string) $subject
+ * @param string $subject
  *   Email subject.
- * @param (string) $body
+ * @param string $body
  *   Email message body (can be HTML or plaintext).
  *
- * @return (array)
+ * @return array
  *   Message array structure, as returned by drupal_mail(). Check for 'result' =
  *   TRUE to verify that the message was sent (at least, according to PHP).
  */
@@ -77,13 +77,13 @@ function simple_mail_send($from, $to, $subject, $body) {
  * sending batches of email so the page request is not delayed while waiting
  * for individual messages to be sent.
  *
- * @param (string) $from
+ * @param string $from
  *   Email sender. Defaults to the system email.
- * @param (string) $to
+ * @param string $to
  *   Email receipient.
- * @param (string) $subject
+ * @param string $subject
  *   Email subject.
- * @param (string) $body
+ * @param string $body
  *   Email message body (can be HTML or plaintext).
  *
  * @return bool

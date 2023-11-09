@@ -101,9 +101,7 @@ class SimpleMailSettingsController extends ConfigFormBase {
     }
 
     $config->save();
-
-    // Tell the user the settings have been saved.
-    drupal_set_message(t('The configuration options have been saved.'));
+    parent::submitForm($form, $form_state);
   }
 
 }
