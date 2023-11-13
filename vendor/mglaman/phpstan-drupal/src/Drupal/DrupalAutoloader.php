@@ -65,7 +65,7 @@ class DrupalAutoloader
         $drupalRoot = $finder->getDrupalRoot();
         $drupalVendorRoot = $finder->getVendorDir();
         if (! (bool) $drupalRoot || ! (bool) $drupalVendorRoot) {
-            throw new \RuntimeException("Unable to detect Drupal at $drupalRoot");
+            throw new \RuntimeException("Unable to detect Drupal at {$drupalParams['drupal_root']}");
         }
 
         $this->drupalRoot = $drupalRoot;
@@ -110,6 +110,10 @@ class DrupalAutoloader
             // Add .post_update.php
             if (file_exists($module_dir . '/' . $module_name . '.post_update.php')) {
                 $this->loadAndCatchErrors($module_dir . '/' . $module_name . '.post_update.php');
+            }
+            // Add .api.php
+            if (file_exists($module_dir . '/' . $module_name . '.api.php')) {
+                $this->loadAndCatchErrors($module_dir . '/' . $module_name . '.api.php');
             }
             // Add misc .inc that are magically allowed via hook_hook_info.
             $magic_hook_info_includes = [
