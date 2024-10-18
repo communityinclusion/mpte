@@ -72,6 +72,12 @@ class ThemeHandler implements ThemeHandlerInterface {
         $list = $this->themeList->getList();
         foreach (array_keys($installed_themes) as $theme_name) {
           $this->addTheme($list[$theme_name]);
+          // Hack PF.  Got this here: https://git.drupalcode.org/issue/drupal-3478628/-/commit/53479799d82fb27e0b5020f2e29c50665c0d0025.patch
+           // Avoid a type error if the list of installed themes is invalid.
+          // @todo: log a useful error instead.
+          if (isset($list[$theme_name])) {
+            $this->addTheme($list[$theme_name]);
+          }
         }
       }
     }
