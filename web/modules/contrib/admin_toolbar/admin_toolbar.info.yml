@@ -3,6 +3,6 @@ description: Provides an improved drop-down menu interface to the site Toolbar.
 package: Administration
 type: module
 configure: admin_toolbar.settings
-core_version_requirement: ^9.2 || ^10
+core_version_requirement: ^9.5 || ^10 || ^11
 dependencies:
   - drupal:toolbar
