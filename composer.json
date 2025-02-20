@@ -54,7 +54,7 @@
         "drupal/captcha": "^1.0@beta",
         "drupal/computed_field": "^3.0@alpha",
         "drupal/conditional_fields": "^4.0@alpha",
-        "drupal/core": "10.3.10",
+        "drupal/core": "^10.4.3",
         "drupal/core-composer-scaffold": "^10.1.6",
         "drupal/core-dev": "^10.1.6",
         "drupal/csv_importer": "1.x-dev",

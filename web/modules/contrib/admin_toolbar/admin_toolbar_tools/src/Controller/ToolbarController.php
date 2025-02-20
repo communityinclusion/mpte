@@ -143,8 +143,8 @@ class ToolbarController extends ControllerBase {
    *   A TwigEnvironment instance.
    * @param \Drupal\Core\Theme\Registry $theme_registry
    *   The theme.registry service.
-   * @param \Drupal\search\SearchPageRepositoryInterface $searchPageRepository
-   *  The search page repository service.
+   * @param \Drupal\search\SearchPageRepositoryInterface $search_page_repository
+   *   The search page repository service.
    */
   public function __construct(
     CronInterface $cron,
@@ -158,10 +158,9 @@ class ToolbarController extends ControllerBase {
     CachedDiscoveryClearerInterface $plugin_cache_clearer,
     CacheBackendInterface $cache_menu,
     TwigEnvironment $twig,
-    // phpcs:ignore Drupal.Functions.MultiLineFunctionDeclaration.MissingTrailingComma
     Registry $theme_registry,
-    SearchPageRepositoryInterface $search_page_repository,
-
+    // phpcs:ignore Drupal.Functions.MultiLineFunctionDeclaration.MissingTrailingComma
+    SearchPageRepositoryInterface $search_page_repository
   ) {
     $this->cron = $cron;
     $this->menuLinkManager = $menuLinkManager;
@@ -307,18 +306,18 @@ class ToolbarController extends ControllerBase {
     return new RedirectResponse($this->reloadPage());
   }
 
-/**
- * Reindexes all active search pages.
- */
-public function runReindexSite() {
-  // Ask each active search page to mark itself for re-index.
-  foreach ($this->searchPageRepository->getIndexableSearchPages() as $entity) {
-    $entity->getPlugin()->markForReindex();
+  /**
+   * Reindexes all active search pages.
+   */
+  public function runReindexSite() {
+    // Ask each active search page to mark itself for re-index.
+    foreach ($this->searchPageRepository->getIndexableSearchPages() as $entity) {
+      $entity->getPlugin()->markForReindex();
+    }
+    // Run the cron to process the reindexing.
+    $this->cron->run();
+    $this->messenger()->addMessage($this->t('All search indexes have been rebuilt.'));
+    return new RedirectResponse($this->reloadPage());
   }
-  // Run the cron to process the reindexing.
-  $this->cron->run();
-  $this->messenger()->addMessage($this->t('All search indexes have been rebuilt.'));
-  return new RedirectResponse($this->reloadPage());
-}
 
 }
