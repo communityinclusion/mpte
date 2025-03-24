@@ -18,6 +18,10 @@ function admin_toolbar_toolbar_alter(&$items) {
     [AdminToolbar::class, 'preRenderTray'],
   ];
   $items['administration']['#attached']['library'][] = 'admin_toolbar/toolbar.tree';
+  $disable_sticky = \Drupal::config('admin_toolbar.settings')->get('disable_sticky');
+  if ($disable_sticky === TRUE) {
+    $items['administration']['#attached']['library'][] = 'admin_toolbar/toolbar.disable_sticky';
+  }
   $hoverintent_functionality = \Drupal::config('admin_toolbar_tools.settings')->get('hoverintent_functionality');
   if ($hoverintent_functionality === TRUE) {
     // Use jQuery hover() effect.

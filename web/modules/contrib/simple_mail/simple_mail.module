@@ -21,6 +21,7 @@ function simple_mail_mail($key, &$message, $params) {
   switch ($key) {
     case 'simple_mail':
       $message['headers']['Content-Type'] = 'text/html; charset=UTF-8;';
+      $message['headers']['From'] = $params['from'];
       $message['subject'] = $params['subject'];
       $message['body'][] = $params['body'];
       break;
@@ -60,6 +61,7 @@ function simple_mail_send($from, $to, $subject, $body) {
   if (empty($from)) {
     $from = \Drupal::config('system.site')->get('mail');
   }
+  $params['from'] = $from;
   $params['subject'] = $subject;
   $params['body'] = $body;
   $langcode = \Drupal::languageManager()->getDefaultLanguage();

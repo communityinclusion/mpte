@@ -12,9 +12,7 @@ use Drupal\Tests\BrowserTestBase;
 class AdminToolbarToolsAlterTest extends BrowserTestBase {
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   protected static $modules = [
     'toolbar',

@@ -5,3 +5,6 @@ admin_toolbar.settings:
     menu_depth:
       type: integer
       label: 'Depth of displayed menu'
+    disable_sticky:
+      type: boolean
+      label: 'Disable sticky toolbar'

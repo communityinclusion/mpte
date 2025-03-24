@@ -3,7 +3,9 @@
 namespace Drupal\admin_toolbar_tools\Controller;
 
 use Drupal\Component\Datetime\TimeInterface;
+use Drupal\Core\Asset\AssetCollectionOptimizerInterface;
 use Drupal\Core\Cache\CacheBackendInterface;
+use Drupal\Core\Cache\CacheTagsInvalidatorInterface;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\CronInterface;
 use Drupal\Core\Menu\ContextualLinkManager;
@@ -13,7 +15,6 @@ use Drupal\Core\Menu\MenuLinkManagerInterface;
 use Drupal\Core\Plugin\CachedDiscoveryClearerInterface;
 use Drupal\Core\Template\TwigEnvironment;
 use Drupal\Core\Theme\Registry;
-use Drupal\search\SearchPageRepositoryInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -110,11 +111,32 @@ class ToolbarController extends ControllerBase {
   protected $themeRegistry;
 
   /**
-   * The search page repository service.
+   * The cache tags invalidator.
    *
-   * @var \Drupal\search\SearchPageRepositoryInterface
+   * @var \Drupal\Core\Cache\CacheTagsInvalidatorInterface
    */
-  protected SearchPageRepositoryInterface $searchPageRepository;
+  protected $cacheTagsInvalidator;
+
+  /**
+   * The CSS asset collection optimizer service.
+   *
+   * @var \Drupal\Core\Asset\AssetCollectionOptimizerInterface
+   */
+  protected $cssCollectionOptimizer;
+
+  /**
+   * The JavaScript asset collection optimizer service.
+   *
+   * @var \Drupal\Core\Asset\AssetCollectionOptimizerInterface
+   */
+  protected $jsCollectionOptimizer;
+
+  /**
+   * The asset query string service.
+   *
+   * @var \Drupal\Core\Asset\AssetQueryStringInterface
+   */
+  protected $assetQueryString;
 
   /**
    * Constructs a ToolbarController object.
@@ -143,8 +165,12 @@ class ToolbarController extends ControllerBase {
    *   A TwigEnvironment instance.
    * @param \Drupal\Core\Theme\Registry $theme_registry
    *   The theme.registry service.
-   * @param \Drupal\search\SearchPageRepositoryInterface $search_page_repository
-   *   The search page repository service.
+   * @param \Drupal\Core\Cache\CacheTagsInvalidatorInterface $cache_tags_invalidator
+   *   The cache tags invalidator.
+   * @param \Drupal\Core\Asset\AssetCollectionOptimizerInterface $css_collection_optimizer
+   *   The CSS asset collection optimizer service.
+   * @param \Drupal\Core\Asset\AssetCollectionOptimizerInterface $js_collection_optimizer
+   *   The JavaScript asset collection optimizer service.
    */
   public function __construct(
     CronInterface $cron,
@@ -159,8 +185,10 @@ class ToolbarController extends ControllerBase {
     CacheBackendInterface $cache_menu,
     TwigEnvironment $twig,
     Registry $theme_registry,
+    CacheTagsInvalidatorInterface $cache_tags_invalidator,
+    AssetCollectionOptimizerInterface $css_collection_optimizer,
     // phpcs:ignore Drupal.Functions.MultiLineFunctionDeclaration.MissingTrailingComma
-    SearchPageRepositoryInterface $search_page_repository
+    AssetCollectionOptimizerInterface $js_collection_optimizer
   ) {
     $this->cron = $cron;
     $this->menuLinkManager = $menuLinkManager;
@@ -174,14 +202,16 @@ class ToolbarController extends ControllerBase {
     $this->cacheMenu = $cache_menu;
     $this->twig = $twig;
     $this->themeRegistry = $theme_registry;
-    $this->searchPageRepository = $search_page_repository;
+    $this->cacheTagsInvalidator = $cache_tags_invalidator;
+    $this->cssCollectionOptimizer = $css_collection_optimizer;
+    $this->jsCollectionOptimizer = $js_collection_optimizer;
   }
 
   /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    return new static(
+    $instance = new static(
       $container->get('cron'),
       $container->get('plugin.manager.menu.link'),
       $container->get('plugin.manager.menu.contextual_link'),
@@ -194,8 +224,14 @@ class ToolbarController extends ControllerBase {
       $container->get('cache.menu'),
       $container->get('twig'),
       $container->get('theme.registry'),
-      $container->get('search.search_page_repository')
+      $container->get('cache_tags.invalidator'),
+      $container->get('asset.css.collection_optimizer'),
+      $container->get('asset.js.collection_optimizer')
     );
+    if (floatval(\Drupal::VERSION) >= 10.2) {
+      $instance->assetQueryString = $container->get('asset.query_string');
+    }
+    return $instance;
   }
 
   /**
@@ -224,8 +260,18 @@ class ToolbarController extends ControllerBase {
    * Flushes css and javascript caches.
    */
   public function flushJsCss() {
-    $this->state()
-      ->set('system.css_js_query_string', base_convert($this->time->getCurrentTime(), 10, 36));
+    $this->cacheTagsInvalidator->invalidateTags(['library_info']);
+    $this->cssCollectionOptimizer->deleteAll();
+    $this->jsCollectionOptimizer->deleteAll();
+
+    // @todo Remove once Core versions below 10.2.x are not supported anymore.
+    if (floatval(\Drupal::VERSION) < 10.2) {
+      // @phpstan-ignore function.notFound
+      _drupal_flush_css_js();
+    }
+    else {
+      $this->assetQueryString->reset();
+    }
     $this->messenger()->addMessage($this->t('CSS and JavaScript cache cleared.'));
     return new RedirectResponse($this->reloadPage());
   }
@@ -252,7 +298,7 @@ class ToolbarController extends ControllerBase {
    * Clears all cached menu data.
    */
   public function flushMenu() {
-    $this->cacheMenu->invalidateAll();
+    $this->cacheMenu->deleteAll();
     $this->menuLinkManager->rebuild();
     $this->contextualLinkManager->clearCachedDefinitions();
     $this->localTaskLinkManager->clearCachedDefinitions();
@@ -292,7 +338,7 @@ class ToolbarController extends ControllerBase {
    * Clear the rendered cache.
    */
   public function cacheRender() {
-    $this->cacheRender->invalidateAll();
+    $this->cacheRender->deleteAll();
     $this->messenger()->addMessage($this->t('Render cache cleared.'));
     return new RedirectResponse($this->reloadPage());
   }
@@ -303,20 +349,6 @@ class ToolbarController extends ControllerBase {
   public function themeRebuild() {
     $this->themeRegistry->reset();
     $this->messenger()->addMessage($this->t('Theme registry rebuilt.'));
-    return new RedirectResponse($this->reloadPage());
-  }
-
-  /**
-   * Reindexes all active search pages.
-   */
-  public function runReindexSite() {
-    // Ask each active search page to mark itself for re-index.
-    foreach ($this->searchPageRepository->getIndexableSearchPages() as $entity) {
-      $entity->getPlugin()->markForReindex();
-    }
-    // Run the cron to process the reindexing.
-    $this->cron->run();
-    $this->messenger()->addMessage($this->t('All search indexes have been rebuilt.'));
     return new RedirectResponse($this->reloadPage());
   }
 

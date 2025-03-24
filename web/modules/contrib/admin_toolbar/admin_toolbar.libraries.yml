@@ -7,6 +7,7 @@ toolbar.tree:
   dependencies:
     - core/jquery
     - core/drupal
+
 toolbar.tree.hoverintent:
   js:
     js/jquery.hoverIntent.js: {}
@@ -19,3 +20,8 @@ toolbar.tree.hover:
     js/admin_toolbar.hover.js: {}
   dependencies:
     - core/jquery
+
+toolbar.disable_sticky:
+  css:
+    theme:
+      css/admin_toolbar.disable_sticky.css: {}

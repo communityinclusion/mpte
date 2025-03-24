@@ -67,6 +67,13 @@ class AdminToolbarSettingsForm extends ConfigFormBase {
       '#options' => array_combine($depth_values, $depth_values),
     ];
 
+    $form['disable_sticky'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Disable sticky toolbar'),
+      '#description' => $this->t("Disable Admin Toolbar's sticky behavior so it stays at the top of the page when scrolling."),
+      '#default_value' => $config->get('disable_sticky'),
+    ];
+
     return parent::buildForm($form, $form_state);
   }
 
@@ -76,9 +83,10 @@ class AdminToolbarSettingsForm extends ConfigFormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $this->config('admin_toolbar.settings')
       ->set('menu_depth', $form_state->getValue('menu_depth'))
+      ->set('disable_sticky', $form_state->getValue('disable_sticky'))
       ->save();
     parent::submitForm($form, $form_state);
-    $this->cacheMenu->invalidateAll();
+    $this->cacheMenu->deleteAll();
     $this->menuLinkManager->rebuild();
   }
 

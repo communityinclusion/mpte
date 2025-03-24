@@ -1,0 +1,4 @@
+/* Disable Admin Toolbar's sticky behavior to stay at the top of the page. */
+.toolbar-fixed .toolbar-oriented .toolbar-bar {
+  position: absolute;
+}

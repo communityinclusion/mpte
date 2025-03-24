@@ -92,7 +92,7 @@ class AdminToolbarToolsSettingsForm extends ConfigFormBase {
       ->set('show_local_tasks', $form_state->getValue('show_local_tasks'))
       ->save();
     parent::submitForm($form, $form_state);
-    $this->cacheMenu->invalidateAll();
+    $this->cacheMenu->deleteAll();
     $this->menuLinkManager->rebuild();
   }
 

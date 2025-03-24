@@ -64,9 +64,13 @@ class AdminToolbarSettingsFormTest extends BrowserTestBase {
     // Default value '4': the menu should be displayed as level 3.
     $assert->elementExists('xpath', '//div[@class="toolbar-menu-administration"]//ul[contains(@class, "toolbar-menu")]//li[contains(@class, "menu-item")]//ul[@class="toolbar-menu"]//li[contains(@class, "menu-item")]//ul[@class="toolbar-menu"]//li[@class="menu-item"]//a[contains(@href, "/admin/config/user-interface/admin-toolbar") and contains(.,"Admin Toolbar")]');
 
-    // Set the 'Menu depth' to '2' and save the form.
+    // Check sticky behavior is not disabled.
+    $assert->responseNotContains('css/admin_toolbar.disable_sticky.css');
+
+    // Set the 'Menu depth' to '2', disable sticky and save the form.
     $edit = [
       'menu_depth' => '2',
+      'disable_sticky' => TRUE,
     ];
     $this->submitForm($edit, 'Save configuration');
     $assert->pageTextContains('The configuration options have been saved.');
@@ -75,8 +79,11 @@ class AdminToolbarSettingsFormTest extends BrowserTestBase {
     $assert->elementNotExists('xpath', '//div[@class="toolbar-menu-administration"]//ul[contains(@class, "toolbar-menu")]//li[contains(@class, "menu-item")]//ul[@class="toolbar-menu"]//li[contains(@class, "menu-item")]//ul[@class="toolbar-menu"]//li[@class="menu-item"]//a[contains(@href, "/admin/config/user-interface/admin-toolbar") and contains(.,"Admin Toolbar")]');
     // Check the menu item 'User interface' does not have a child 'ul'.
     $assert->elementNotExists('xpath', '//div[@class="toolbar-menu-administration"]//ul[contains(@class, "toolbar-menu")]//li[contains(@class, "menu-item")]//ul[@class="toolbar-menu"]//li[contains(@class, "menu-item")]//ul');
-    // Check the menu item 'User interface' contains a link but not a menu item.
-    $assert->elementExists('xpath', '//div[@class="toolbar-menu-administration"]//ul[contains(@class, "toolbar-menu")]//li[contains(@class, "menu-item")]//ul[@class="toolbar-menu"]//li[contains(@class, "menu-item") and contains(a, .) and not(contains(ul, .))]');
+    // Check the menu item 'User interface' has a single child 'a' link tag.
+    $assert->elementExists('xpath', '//div[@class="toolbar-menu-administration"]//ul[contains(@class, "toolbar-menu")]//li[contains(@class, "menu-item")]//ul[@class="toolbar-menu"]//li[contains(@class, "menu-item") and count(child::*)=1 and child::*=a]');
+
+    // Check sticky behavior is disabled.
+    $assert->responseContains('css/admin_toolbar.disable_sticky.css');
 
   }
 

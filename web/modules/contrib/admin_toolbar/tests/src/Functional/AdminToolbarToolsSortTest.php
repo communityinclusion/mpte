@@ -14,9 +14,7 @@ use Drupal\system\Entity\Menu;
 class AdminToolbarToolsSortTest extends BrowserTestBase {
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   protected static $modules = [
     'toolbar',
