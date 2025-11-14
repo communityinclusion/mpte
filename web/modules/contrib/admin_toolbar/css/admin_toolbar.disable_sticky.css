@@ -1,4 +1,8 @@
 /* Disable Admin Toolbar's sticky behavior to stay at the top of the page. */
-.toolbar-fixed .toolbar-oriented .toolbar-bar {
-  position: absolute;
+.toolbar-fixed {
+  /* Set to toolbar and the expand button to a position 'absolute'. */
+  .toolbar-expand-floating-button,
+  .toolbar-oriented .toolbar-bar {
+    position: absolute;
+  }
 }

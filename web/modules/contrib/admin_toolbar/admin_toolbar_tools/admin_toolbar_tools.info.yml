@@ -4,5 +4,3 @@ package: Administration
 configure: admin_toolbar_tools.settings
 type: module
 core_version_requirement: ^9.5 || ^10 || ^11
-dependencies:
-  - admin_toolbar:admin_toolbar

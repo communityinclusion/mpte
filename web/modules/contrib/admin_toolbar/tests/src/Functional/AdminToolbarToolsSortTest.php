@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\admin_toolbar\Functional;
 
+use Drupal\Tests\admin_toolbar\Traits\AdminToolbarHelperTestTrait;
 use Drupal\Tests\BrowserTestBase;
 use Drupal\media\Entity\MediaType;
 use Drupal\system\Entity\Menu;
@@ -13,12 +14,12 @@ use Drupal\system\Entity\Menu;
  */
 class AdminToolbarToolsSortTest extends BrowserTestBase {
 
+  use AdminToolbarHelperTestTrait;
+
   /**
    * {@inheritdoc}
    */
   protected static $modules = [
-    'toolbar',
-    'breakpoint',
     'admin_toolbar',
     'admin_toolbar_tools',
     'menu_ui',
@@ -40,6 +41,9 @@ class AdminToolbarToolsSortTest extends BrowserTestBase {
 
   /**
    * Tests that menu updates on entity add/update/delete.
+   *
+   * @return void
+   *   Nothing to return.
    */
   public function testMenuUpdate() {
 
@@ -78,7 +82,7 @@ class AdminToolbarToolsSortTest extends BrowserTestBase {
     ]);
     $chinchilla_media_type->save();
     $this->drupalGet('/admin');
-    $this->assertMenuHasHref('/admin/structure/media/manage/chinchilla');
+    $this->assertAdminToolbarMenuLinkExists('admin/structure/media/manage/chinchilla', 'Chinchilla');
 
     // Assert that adding a menu adds it to the admin toolbar.
     $menu = Menu::create([
@@ -87,25 +91,28 @@ class AdminToolbarToolsSortTest extends BrowserTestBase {
     ]);
     $menu->save();
     $this->drupalGet('/admin');
-    $this->assertMenuHasHref('/admin/structure/menu/manage/chupacabra');
+    $this->assertAdminToolbarMenuLinkExists('admin/structure/menu/manage/chupacabra', 'Chupacabra');
 
     // Assert that deleting a menu removes it from the admin toolbar.
-    $this->assertMenuHasHref('/admin/structure/menu/manage/armadillo');
+    $this->assertAdminToolbarMenuLinkExists('admin/structure/menu/manage/armadillo', 'Armadillo');
     $menu = Menu::load('armadillo');
     $menu->delete();
     $this->drupalGet('/admin');
-    $this->assertMenuDoesNotHaveHref('/admin/structure/menu/manage/armadillo');
+    $this->assertAdminToolbarMenuLinkNotExists('armadillo');
 
     // Assert that deleting a content entity bundle removes it from admin menu.
-    $this->assertMenuHasHref('/admin/structure/media/manage/chinchilla');
+    $this->assertAdminToolbarMenuLinkExists('admin/structure/media/manage/chinchilla', 'Chinchilla');
     $chinchilla_media_type = MediaType::load('chinchilla');
     $chinchilla_media_type->delete();
     $this->drupalGet('/admin');
-    $this->assertMenuDoesNotHaveHref('/admin/structure/media/manage/chinchilla');
+    $this->assertAdminToolbarMenuLinkNotExists('chinchilla');
   }
 
   /**
    * Tests sorting of menus by label rather than machine name.
+   *
+   * @return void
+   *   Nothing to return.
    */
   public function testMenuSorting() {
 
@@ -221,32 +228,6 @@ class AdminToolbarToolsSortTest extends BrowserTestBase {
       // Using assert contains because prefaces the urls with "/subdirectory".
       $this->assertStringContainsString($expected[$key], $link);
     }
-  }
-
-  /**
-   * Checks that there is a link with the specified url in the admin toolbar.
-   *
-   * @param string $url
-   *   The url to assert exists in the admin menu.
-   *
-   * @throws \Behat\Mink\Exception\ElementNotFoundException
-   */
-  protected function assertMenuHasHref($url) {
-    $this->assertSession()
-      ->elementExists('xpath', '//div[@id="toolbar-item-administration-tray"]//a[contains(@href, "' . $url . '")]');
-  }
-
-  /**
-   * Checks that there is no link with the specified url in the admin toolbar.
-   *
-   * @param string $url
-   *   The url to assert exists in the admin menu.
-   *
-   * @throws \Behat\Mink\Exception\ExpectationException
-   */
-  protected function assertMenuDoesNotHaveHref($url) {
-    $this->assertSession()
-      ->elementNotExists('xpath', '//div[@id="toolbar-item-administration-tray"]//a[contains(@href, "' . $url . '")]');
   }
 
 }

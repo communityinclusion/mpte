@@ -1,2 +1,6 @@
+enable_toggle_shortcut: false
 menu_depth: 4
-disable_sticky: false
+sticky_behavior: 'enabled'
+hoverintent_behavior:
+  enabled: true
+  timeout: 500

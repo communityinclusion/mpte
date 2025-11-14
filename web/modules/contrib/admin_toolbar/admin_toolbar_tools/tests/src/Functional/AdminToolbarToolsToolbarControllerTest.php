@@ -22,6 +22,7 @@ class AdminToolbarToolsToolbarControllerTest extends BrowserTestBase {
    * {@inheritdoc}
    */
   protected static $modules = [
+    'admin_toolbar',
     'admin_toolbar_tools',
     // Required to test link '/admin/flush/views' to flush views cache.
     'views',

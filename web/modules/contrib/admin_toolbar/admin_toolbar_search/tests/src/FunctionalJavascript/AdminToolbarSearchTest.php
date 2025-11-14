@@ -12,6 +12,9 @@ class AdminToolbarSearchTest extends AdminToolbarSearchTestBase {
 
   /**
    * Tests search functionality without admin_toolbar_tools enabled.
+   *
+   * @return void
+   *   Nothing to return.
    */
   public function testToolbarSearch() {
     $search_tab = '#admin-toolbar-search-tab';
@@ -19,8 +22,9 @@ class AdminToolbarSearchTest extends AdminToolbarSearchTestBase {
     $search_tray = '#toolbar-item-administration-search-tray';
 
     $this->drupalLogin($this->userWithAccess);
+    /** @var \Drupal\FunctionalJavascriptTests\JSWebAssert $assert_session */
     $assert_session = $this->assertSession();
-    $assert_session->responseContains('admin.toolbar_search.css');
+    $assert_session->responseContains('admin_toolbar_search.css');
     $assert_session->responseContains('admin_toolbar_search.js');
     $assert_session->waitForElementVisible('css', $search_tab);
     $assert_session->waitForElementVisible('css', $search_toolbar_item);
@@ -33,6 +37,9 @@ class AdminToolbarSearchTest extends AdminToolbarSearchTestBase {
 
   /**
    * Tests a user without the search permission can't use search.
+   *
+   * @return void
+   *   Nothing to return.
    */
   public function testNoAccess() {
     $search_tab = '#admin-toolbar-search-tab';
@@ -41,7 +48,7 @@ class AdminToolbarSearchTest extends AdminToolbarSearchTestBase {
 
     $this->drupalLogin($this->noAccessUser);
     $assert_session = $this->assertSession();
-    $assert_session->responseNotContains('admin.toolbar_search.css');
+    $assert_session->responseNotContains('admin_toolbar_search.css');
     $assert_session->responseNotContains('admin_toolbar_search.js');
     $assert_session->elementNotExists('css', $search_tab);
     $assert_session->elementNotExists('css', $search_toolbar_item);
