@@ -5,6 +5,8 @@
  * Provides extra menu links for the core drupal toolbar.
  */
 
+declare(strict_types=1);
+
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Url;

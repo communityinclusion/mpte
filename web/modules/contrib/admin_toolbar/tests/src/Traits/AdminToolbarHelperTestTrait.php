@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\admin_toolbar\Traits;
 
 /**
@@ -28,6 +30,19 @@ trait AdminToolbarHelperTestTrait {
   ];
 
   /**
+   * The default CSS class used for testing links in the admin toolbar.
+   *
+   * Gives the ability to tests to specify a default CSS class to be used for
+   * asserting the existence of links in the admin toolbar.
+   *
+   * @var string
+   *
+   * @see \Drupal\Tests\admin_toolbar_tools\Functional\AdminToolbarToolsExtraLinksCustomTest::setUp()
+   * @see \Drupal\Tests\admin_toolbar_tools\Traits\AdminToolbarToolsEntityCreationTrait::setUp()
+   */
+  protected $testAdminToolbarDefaultLinkCssClass = 'toolbar-icon toolbar-icon-';
+
+  /**
    * Checks that a specific link exists in the admin toolbar.
    *
    * @param string $link_url
@@ -45,6 +60,8 @@ trait AdminToolbarHelperTestTrait {
    *   Nothing to return.
    *
    * @throws \Behat\Mink\Exception\ElementNotFoundException
+   *
+   * @see \Drupal\Tests\admin_toolbar_tools\Functional\AdminToolbarToolsExtraLinksCustomTest::testAdminToolbarToolsExtraLinksCustom()
    */
   protected function assertAdminToolbarMenuLinkExists(string $link_url = '', string $link_text = '', int $link_position = 0, string $link_css_class = '') {
     // Build a CSS selector with the provided conditions.
@@ -63,6 +80,11 @@ trait AdminToolbarHelperTestTrait {
     // If a class is provided, check the classes of the link contain it ('*=').
     if (!empty($link_css_class)) {
       $link_css_conditions .= '[class*="' . $link_css_class . '"]';
+    }
+    // Allow test classes using the trait to set a default CSS class to be used.
+    elseif (!empty($this->testAdminToolbarDefaultLinkCssClass)) {
+      // If no specific CSS class is provided, use the default one.
+      $link_css_conditions .= '[class*="' . $this->testAdminToolbarDefaultLinkCssClass . '"]';
     }
 
     // If a position is provided, add a ':nth-child()' selector to the CSS
@@ -89,7 +111,7 @@ trait AdminToolbarHelperTestTrait {
    *
    * @throws \Behat\Mink\Exception\ExpectationException
    */
-  protected function assertAdminToolbarMenuLinkNotExists($link_url) {
+  protected function assertAdminToolbarMenuLinkNotExists(string $link_url) {
     // A simple xpath expression is enough here, since it should be less
     // restrictive, in terms of conditions.
     $this->assertSession()

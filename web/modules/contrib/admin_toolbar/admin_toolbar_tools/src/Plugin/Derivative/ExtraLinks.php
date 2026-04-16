@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\admin_toolbar_tools\Plugin\Derivative;
 
 use Drupal\Component\Plugin\Derivative\DeriverBase;
@@ -747,25 +749,24 @@ class ExtraLinks extends DeriverBase implements ContainerDeriverInterface {
     if ($this->moduleHandler->moduleExists('project_browser')) {
       if ($this->routeExists('project_browser.browse')) {
         $project_browser_admin_settings = $this->configFactory->get('project_browser.admin_settings');
-        // Get the enabled project browser sources.
-        $project_browser_enabled_sources = $project_browser_admin_settings->get('enabled_sources');
-        if (!empty($project_browser_enabled_sources)) {
-          // Build a menu link for each enabled project browser source.
-          foreach ($project_browser_enabled_sources as $key => $source_id) {
-            $links['project_browser.browse.' . $source_id] = [
-              'route_name' => 'project_browser.browse',
-              'parent' => 'system.modules_list',
-              // Menu items are ordered by the enabled sources.
-              'weight' => -10 + $key,
-              'route_parameters' => ['source' => $source_id],
-              'class' => 'Drupal\admin_toolbar_tools\Plugin\Menu\MenuLinkPlugin',
-              'metadata' => [
-                'plugin_manager' => 'Drupal\project_browser\Plugin\ProjectBrowserSourceManager',
-                'plugin_id' => $source_id,
-                'label_pattern' => $this->t('Browse @label'),
-              ],
-            ] + $base_plugin_definition;
-          }
+        // Get the enabled project browser sources which are saved as keys of
+        // the 'enabled_sources' config array.
+        $project_browser_enabled_sources = array_keys($project_browser_admin_settings->get('enabled_sources') ?? []);
+        // Build a menu link for each enabled project browser source.
+        foreach ($project_browser_enabled_sources as $key => $source_id) {
+          $links['project_browser.browse.' . $source_id] = [
+            'route_name' => 'project_browser.browse',
+            'parent' => 'system.modules_list',
+            // Menu items are ordered by the enabled sources.
+            'weight' => -10 + $key,
+            'route_parameters' => ['source' => $source_id],
+            'class' => 'Drupal\admin_toolbar_tools\Plugin\Menu\MenuLinkPlugin',
+            'metadata' => [
+              'plugin_manager' => 'Drupal\project_browser\Plugin\ProjectBrowserSourceManager',
+              'plugin_id' => $source_id,
+              'label_pattern' => $this->t('Browse @label'),
+            ],
+          ] + $base_plugin_definition;
         }
       }
     }

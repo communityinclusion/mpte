@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\admin_toolbar\Form;
 
 use Drupal\Core\Form\ConfigFormBase;
@@ -77,7 +79,7 @@ class AdminToolbarSettingsForm extends ConfigFormBase {
     // Add an introduction text to module's settings form.
     $form['settings_form_help_intro'] = [
       '#type' => 'markup',
-      '#markup' => $this->t('The Admin Toolbar module provides a better user experience for the default Drupal Toolbar.<br>It is a drop-down menu that allows quicker access to all the administration pages in a more efficient way, with fewer clicks and less scrolling.<br><br>The following settings mostly provide advanced configuration of the JavaScript behavior of the Toolbar sticky and hoverIntent.'),
+      '#markup' => $this->t('The Admin Toolbar module provides a better user experience for the default Drupal Toolbar.<br>It is a drop-down menu that allows quicker access to all the administration pages in a more efficient way, with fewer clicks and less scrolling.<br><br>The following settings provide advanced configuration of the sticky, show/hide-toolbar shortcut, and hover-intent toolbar behaviors.'),
     ];
 
     // Add 'sticky behavior' wrapper as a 'fieldset' so it stays displayed.
@@ -100,8 +102,8 @@ class AdminToolbarSettingsForm extends ConfigFormBase {
     // Checkbox field to enable/disable the shortcut for toggling the toolbar.
     $form['sticky_options_wrapper']['enable_toggle_shortcut'] = [
       '#type' => 'checkbox',
-      '#title' => $this->t('Hide or show the toolbar with shortcut (Alt + p)'),
-      '#description' => $this->t('If set, the toolbar will be hidden or visible when the user presses the keys: "Alt + p".<br>Disable this setting if it conflicts with any existing keyboard configuration.'),
+      '#title' => $this->t('Hide or show the toolbar with the shortcut <strong>Alt</strong> + <strong>p</strong> (macOS: <strong>Option</strong> + <strong>p</strong>)'),
+      '#description' => $this->t('If set, the toolbar will be hidden or visible when the user presses the shortcut <strong>Alt</strong> + <strong>p</strong> (macOS: <strong>Option</strong> + <strong>p</strong>).<br>Disable this setting if it conflicts with any existing keyboard configuration.'),
       '#default_value' => $config->get('enable_toggle_shortcut'),
     ];
 
@@ -110,21 +112,22 @@ class AdminToolbarSettingsForm extends ConfigFormBase {
     // Add hoverIntent behavior wrapper as a 'fieldset' so it stays displayed.
     $form['hoverintent_behavior'] = [
       '#type' => 'fieldset',
-      '#title' => $this->t('Toolbar hoverIntent behavior'),
+      '#title' => $this->t('Toolbar hover-intent behavior'),
       '#tree' => TRUE,
     ];
 
     // Create link to hoverIntent source website.
-    $hoverintent_source_link = new TranslatableMarkup('<a href=":hoverintent_src_url" target="_blank">hoverIntent</a>', [':hoverintent_src_url' => 'https://briancherne.github.io/jquery-hoverIntent/']);
+    $hoverintent_source_link = new TranslatableMarkup('<a href=":hoverintent_src_url" target="_blank">hover intent</a>', [':hoverintent_src_url' => 'https://briancherne.github.io/jquery-hoverIntent/']);
 
     // Add enable hoverIntent behavior checkbox.
     $form['hoverintent_behavior']['enabled'] = [
       '#type' => 'checkbox',
-      '#title' => $this->t('Enable hoverIntent'),
+      '#title' => $this->t('Enable hover intent'),
       '#prefix' => $this->t(
-        "Provides a smoother user experience, where only menu items which are paused over are expanded, to avoid accidental activations.<br>Disable @hoverintent_source_link to use module's default basic JavaScript behavior.",
+        "Provides a smoother user experience, where only menu items which are paused over are expanded, to avoid accidental activations.<br>Disable @hoverintent_source_link to respond instantly to the pointer position.",
         ['@hoverintent_source_link' => $hoverintent_source_link]
       ),
+      '#description' => $this->t('Delay menu activation long enough to establish intent to use the menu.'),
       '#default_value' => $config->get('hoverintent_behavior')['enabled'] ?? TRUE,
     ];
 
@@ -132,9 +135,9 @@ class AdminToolbarSettingsForm extends ConfigFormBase {
     $timeout_range_values = range(250, 2000, 250);
     $form['hoverintent_behavior']['timeout'] = [
       '#type' => 'select',
-      '#title' => $this->t('hoverIntent timeout (ms)'),
+      '#title' => $this->t('Hover-intent timeout (ms)'),
       '#field_suffix' => $this->t('milliseconds'),
-      '#description' => $this->t('Sets the hoverIntent trigger timeout (steps of 250).<br>The higher the value, the longer the menu dropdown stays visible, after the mouse moves out (default: 500ms).'),
+      '#description' => $this->t('Sets the hover-intent trigger timeout (steps of 250ms).<br>The higher the value, the longer the menu dropdown stays visible after the mouse moves out (default: 500ms).'),
       '#options' => array_combine($timeout_range_values, $timeout_range_values),
       '#default_value' => $config->get('hoverintent_behavior')['timeout'],
       // Display the timeout field if hoverIntent is enabled.

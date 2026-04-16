@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\admin_toolbar_search\Functional;
 
 use Drupal\admin_toolbar_search\Constants\AdminToolbarSearchConstants;
@@ -120,6 +122,9 @@ class AdminToolbarSearchSettingsFormTest extends BrowserTestBase {
    * - The module's CSS and JS files are not loaded.
    * - The search input field is not displayed in the toolbar.
    * - The extra links search route is not accessible.
+   *
+   * @see admin_toolbar_search_toolbar()
+   * @see \Drupal\admin_toolbar_search\Form\AdminToolbarSearchSettingsForm
    */
   public function testAdminToolbarSearchSettingsForm(): void {
     /** @var \Drupal\Tests\WebAssert $assert */
@@ -143,18 +148,14 @@ class AdminToolbarSearchSettingsFormTest extends BrowserTestBase {
     $keyboard_shortcut_js = 'admin_toolbar_search/js/admin_toolbar_search.keyboard_shortcut.js';
     // Check the keyboard shortcut library is loaded by default.
     $assert->responseContains($keyboard_shortcut_js);
-    // Check the display menu item is disabled by default.
-    $assert->responseContains('"adminToolbarSearch":{"loadExtraLinks":true,"displayMenuItem":false}');
-    // Check the mobile search tab is displayed before the search tab, with the
-    // expected HTML IDs and attributes. Check the input field has the correct
-    // type, size, label, placeholder and title attributes.
-    $assert->responseMatches('/<div id="' . AdminToolbarSearchConstants::ADMIN_TOOLBAR_SEARCH_HTML_IDS['search_tab_mobile'] . '" class="toolbar-tab">[\n\r ]*<span class="toolbar-icon toolbar-item">Search<\/span>[\n\r ]*<div>[\n\r ]*<nav.*>[\n\r ]*<\/nav>[\n\r ]*<\/div>[\n\r ]*<\/div>[\n\r ]*<div id="' . AdminToolbarSearchConstants::ADMIN_TOOLBAR_SEARCH_HTML_IDS['search_tab'] . '" class="toolbar-tab">[\n\r ]*<div class="js-form-item.*- form-no-label">[\n\r ]*<label for="' . AdminToolbarSearchConstants::ADMIN_TOOLBAR_SEARCH_HTML_IDS['search_input'] . '" class="visually-hidden">Search<\/label>[\n\r ]*<input title="Keyboard shortcut: Alt \+ a" type="search" id="' . AdminToolbarSearchConstants::ADMIN_TOOLBAR_SEARCH_HTML_IDS['search_input'] . '" size="30" maxlength="128" placeholder="Search for menu links \(Alt \+ a\)".*>[\n\r ]*<\/div>[\n\r ]*<div>[\n\r ]*<nav.*>[\n\r ]*<\/nav>[\n\r ]*<\/div>[\n\r ]*<\/div>/');
+    // Check the settings variable to load extra links is enabled by default,
+    // since Admin Toolbar Tools is enabled.
+    $assert->responseContains('"adminToolbarSearch":{"loadExtraLinks":true}');
 
-    // Check the HTML IDs of the search toolbar item are *not* displayed by
-    // default, so the search field is directly in the toolbar
-    // (display_menu_item: false).
-    $assert->responseNotContains(AdminToolbarSearchConstants::ADMIN_TOOLBAR_SEARCH_HTML_IDS['search_toolbar_item']);
-    $assert->responseNotContains(AdminToolbarSearchConstants::ADMIN_TOOLBAR_SEARCH_HTML_IDS['search_tray']);
+    // Check the search tab is displayed before the search field tab, with the
+    // expected HTML IDs and attributes. Check the input fields have the correct
+    // type, size, label, placeholder and title attributes.
+    $assert->responseMatches('/<div id="' . AdminToolbarSearchConstants::ADMIN_TOOLBAR_SEARCH_HTML_IDS['search_field_tab'] . '" class="toolbar-tab">[\n\r ]*<div class="js-form-item.*- form-no-label">[\n\r ]*<label for="' . AdminToolbarSearchConstants::ADMIN_TOOLBAR_SEARCH_HTML_IDS['search_field_input'] . '" class="visually-hidden">Search<\/label>[\n\r ]*<input title="Keyboard shortcut: Alt \+ a" type="search" id="' . AdminToolbarSearchConstants::ADMIN_TOOLBAR_SEARCH_HTML_IDS['search_field_input'] . '" size="30" maxlength="128" placeholder="Search for menu links \(Alt \+ a\)".*>[\n\r ]*<\/div>[\n\r ]*<div>[\n\r ]*<nav.*>[\n\r ]*<\/nav>[\n\r ]*<\/div>[\n\r ]*<\/div>[\n\r ]*<div id="' . AdminToolbarSearchConstants::ADMIN_TOOLBAR_SEARCH_HTML_IDS['search_tab'] . '" class="toolbar-tab">[\n\r ]*<span class="toolbar-icon trigger toolbar-item" id="' . AdminToolbarSearchConstants::ADMIN_TOOLBAR_SEARCH_HTML_IDS['search_toolbar_item'] . '".*>Search<\/span>[\n\r ]*<div id="' . AdminToolbarSearchConstants::ADMIN_TOOLBAR_SEARCH_HTML_IDS['search_tray'] . '".*>[\n\r ]*<nav.*>[\n\r ]*<div class="js-form-item.*">[\n\r ]*<label for="' . AdminToolbarSearchConstants::ADMIN_TOOLBAR_SEARCH_HTML_IDS['search_input'] . '">Search<\/label>[\n\r ]*<input title="Keyboard shortcut: Alt \+ a" type="search" id="' . AdminToolbarSearchConstants::ADMIN_TOOLBAR_SEARCH_HTML_IDS['search_input'] . '" size="60" maxlength="128" placeholder="Search for menu links \(Alt \+ a\)".*>[\n\r ]*<\/div>[\n\r ]*<\/nav>[\n\r ]*<\/div>[\n\r ]*<\/div>/');
 
     // Change the value of 'display_menu_item' and submit the form.
     $this->submitForm([
@@ -167,16 +168,15 @@ class AdminToolbarSearchSettingsFormTest extends BrowserTestBase {
 
     // Check the keyboard shortcut library is loaded by default.
     $assert->responseContains($keyboard_shortcut_js);
-    // Check the display menu item is enabled with the expected JS variable.
-    $assert->responseContains('"adminToolbarSearch":{"loadExtraLinks":true,"displayMenuItem":true}');
 
     // Check the search menu link tab is displayed with a toolbar tray, with the
     // expected HTML IDs and attributes. Check the input field has the correct
     // type, size, label, placeholder and title attributes.
     $assert->responseMatches('/<div id="' . AdminToolbarSearchConstants::ADMIN_TOOLBAR_SEARCH_HTML_IDS['search_tab'] . '" class="toolbar-tab">[\n\r ]*<span class="toolbar-icon trigger toolbar-item" id="' . AdminToolbarSearchConstants::ADMIN_TOOLBAR_SEARCH_HTML_IDS['search_toolbar_item'] . '".*>Search<\/span>[\n\r ]*<div id="' . AdminToolbarSearchConstants::ADMIN_TOOLBAR_SEARCH_HTML_IDS['search_tray'] . '".*>[\n\r ]*<nav.*>[\n\r ]*<div class="js-form-item.*">[\n\r ]*<label for="' . AdminToolbarSearchConstants::ADMIN_TOOLBAR_SEARCH_HTML_IDS['search_input'] . '">Search<\/label>[\n\r ]*<input title="Keyboard shortcut: Alt \+ a" type="search" id="' . AdminToolbarSearchConstants::ADMIN_TOOLBAR_SEARCH_HTML_IDS['search_input'] . '" size="60" maxlength="128" placeholder="Search for menu links \(Alt \+ a\)".*>[\n\r ]*<\/div>[\n\r ]*<\/nav>[\n\r ]*<\/div>[\n\r ]*<\/div>/');
 
-    // Check the HTML ID of the mobile search tab is *not* displayed.
-    $assert->responseNotContains(AdminToolbarSearchConstants::ADMIN_TOOLBAR_SEARCH_HTML_IDS['search_tab_mobile']);
+    // Check the HTML IDs of the search tab and input field are *not* displayed.
+    $assert->responseNotContains(AdminToolbarSearchConstants::ADMIN_TOOLBAR_SEARCH_HTML_IDS['search_field_tab']);
+    $assert->responseNotContains(AdminToolbarSearchConstants::ADMIN_TOOLBAR_SEARCH_HTML_IDS['search_field_input']);
 
     // Change the value of 'enable_keyboard_shortcut' and submit the form.
     $this->submitForm([
@@ -193,10 +193,6 @@ class AdminToolbarSearchSettingsFormTest extends BrowserTestBase {
     $assert->responseContains($admin_toolbar_search_css);
     $assert->responseContains($admin_toolbar_search_js);
 
-    // Check the display menu item JS is not found.
-    $assert->responseNotContains('displayMenuItem');
-    $assert->responseContains('"adminToolbarSearch":{"loadExtraLinks":true}');
-
     // Check the search input field has the correct label, placeholder and title
     // attributes, when the keyboard shortcut is disabled.
     $assert->responseMatches('/<div class="js-form-item.*">[\n\r ]*<label for="' . AdminToolbarSearchConstants::ADMIN_TOOLBAR_SEARCH_HTML_IDS['search_input'] . '">Search<\/label>[\n\r ]*<input title="Type text to search for menu links in the admin toolbar." type="search" id="' . AdminToolbarSearchConstants::ADMIN_TOOLBAR_SEARCH_HTML_IDS['search_input'] . '" size="60" maxlength="128" placeholder="Search for menu links".*>[\n\r ]*<\/div>/');
@@ -205,7 +201,8 @@ class AdminToolbarSearchSettingsFormTest extends BrowserTestBase {
     /* Test module's primary local tasks (tabs). */
 
     // Check the three modules local tasks (tabs) are displayed as expected.
-    $local_tasks_regex = '/<div.*-primary-local-tasks.*>([\r\n].*)+<a.*>Toolbar settings<\/a>.*[\r\n].*<a.*>Search settings<\/a>.*[\r\n].*<a.*>Tools settings<\/a>.*[\r\n].*([\r\n].*)+<\/div>/';
+    // @todo Revert the changes from DO-3559521 when support from D9 is dropped.
+    $local_tasks_regex = '/<div.*-primary-local-tasks.*>([\r\n].*)+<a.*>Toolbar settings<\/a>.*[\r\n].*<a.*>Search settings(.*active tab.*)?<\/a>.*[\r\n].*<a.*>Tools settings<\/a>.*[\r\n].*([\r\n].*)+<\/div>/';
     $assert->responseMatches($local_tasks_regex);
 
     /* Test the permission: 'use admin toolbar search'. */

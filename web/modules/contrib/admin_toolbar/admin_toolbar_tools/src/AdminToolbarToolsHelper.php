@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\admin_toolbar_tools;
 
 use Drupal\Core\Cache\CacheableMetadata;

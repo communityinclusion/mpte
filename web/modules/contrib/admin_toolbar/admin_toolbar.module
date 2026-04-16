@@ -5,6 +5,8 @@
  * This is the module to create a drop-down menu for the core toolbar.
  */
 
+declare(strict_types=1);
+
 use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Url;
