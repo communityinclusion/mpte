@@ -542,6 +542,36 @@ class ExtraLinks extends DeriverBase implements ContainerDeriverInterface {
       }
     }
 
+    // Automatic Updates module: Add extra menu links for the update routes.
+    // Support for these routes is dropped for core versions above 11.2,
+    // required by versions compatible with the module.
+    if ($this->moduleHandler->moduleExists('automatic_updates')) {
+      // Modules update routes, under 'Extend'.
+      if ($this->routeExists('automatic_updates.module_update')) {
+        $links['automatic_updates.module_update'] = [
+          'title' => $this->t('Update'),
+          'route_name' => 'automatic_updates.module_update',
+          'parent' => 'system.modules_list',
+        ] + $base_plugin_definition;
+      }
+      // Themes update routes, under 'Appearance'.
+      if ($this->routeExists('automatic_updates.theme_update')) {
+        $links['automatic_updates.theme_update'] = [
+          'title' => $this->t('Update'),
+          'route_name' => 'automatic_updates.theme_update',
+          'parent' => 'system.themes_page',
+        ] + $base_plugin_definition;
+      }
+      // General update status route, under 'Reports > Available updates'.
+      if ($this->routeExists('automatic_updates.update_form')) {
+        $links['automatic_updates.update_form'] = [
+          'title' => $this->t('Update'),
+          'route_name' => 'automatic_updates.update_form',
+          'parent' => 'update.status',
+        ] + $base_plugin_definition;
+      }
+    }
+
     // If module Devel is enabled.
     if ($this->moduleHandler->moduleExists('devel')) {
       $links['devel'] = [
@@ -635,10 +665,12 @@ class ExtraLinks extends DeriverBase implements ContainerDeriverInterface {
           'parent' => 'entity.view.collection',
         ] + $base_plugin_definition;
       }
+      // Add a link to the Views fields report.
       $links['views_ui.field_list'] = [
         'title' => $this->t('Used in views'),
         'route_name' => 'views_ui.reports_fields',
-        'parent' => 'entity.field_storage_config.collection',
+        // Attach the link to the 'Reports' item if 'field_ui' is disabled.
+        'parent' => $this->moduleHandler->moduleExists('field_ui') ? 'entity.field_storage_config.collection' : 'system.admin_reports',
       ] + $base_plugin_definition;
     }
 

@@ -208,11 +208,15 @@ class AdminToolbarSearchSettingsFormTest extends BrowserTestBase {
     /* Test the permission: 'use admin toolbar search'. */
 
     // Test the extra links search route does not return an access denied error,
-    // but an empty array, even with the 'admin_toolbar_tools' module enabled,
-    // since the modules adding the extra links are all disabled in this test
-    // ('field_ui', 'node', 'media', 'menu_ui', etc...).
+    // but an array of module configuration links instead. This is expected even
+    // with the 'admin_toolbar_tools' module enabled, since the modules adding
+    // the extra links are all disabled in this test ('field_ui', 'node',
+    // 'menu_ui', etc...), there should only be core and admin toolbar links.
     $this->drupalGet('/admin/admin-toolbar-search');
-    $assert->responseContains('[]');
+    // Use a regex to allow for different base URLs in the test environment.
+    // Watch out for the escaped slashes.
+    $search_links_regex = '/\[{"labelRaw":"System","value":".*\\\\\/admin\\\\\/config\\\\\/system"},{"labelRaw":"Admin Toolbar","value":".*\\\\\/admin\\\\\/config\\\\\/user-interface\\\\\/admin-toolbar"},{"labelRaw":"Admin Toolbar Search","value":".*\\\\\/admin\\\\\/config\\\\\/user-interface\\\\\/admin-toolbar-search"},{"labelRaw":"Admin Toolbar Extra Tools","value":".*\\\\\/admin\\\\\/config\\\\\/user-interface\\\\\/admin-toolbar-tools"}]/';
+    $assert->responseMatches($search_links_regex);
 
     // Logout the current session and login with a user *without* search access.
     $this->drupalLogout();

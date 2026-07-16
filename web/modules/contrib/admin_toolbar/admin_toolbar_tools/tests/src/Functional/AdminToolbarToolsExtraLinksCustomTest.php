@@ -185,7 +185,7 @@ class AdminToolbarToolsExtraLinksCustomTest extends BrowserTestBase {
         'position' => 2,
       ],
       [
-        'url' => 'admin/config/people/accounts/display',
+        'url' => (floatval(\Drupal::VERSION) < 11.4) ? 'admin/config/people/accounts/display' : 'admin/config/people/accounts/display/default',
         'text' => 'Manage display',
         'position' => 3,
       ],

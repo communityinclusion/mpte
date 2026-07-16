@@ -10,6 +10,7 @@ webprofiler
 # Ignore certain string values used for tests.
 amara
 atticus
+glossify
 isla
 maeve
 posie

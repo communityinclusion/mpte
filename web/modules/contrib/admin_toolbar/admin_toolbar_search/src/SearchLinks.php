@@ -9,6 +9,7 @@ use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Cache\Context\CacheContextsManager;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Extension\ModuleExtensionList;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Routing\RouteProviderInterface;
@@ -17,7 +18,7 @@ use Drupal\Core\Url;
 use Drupal\system\Entity\Menu;
 
 /**
- * Extra search links.
+ * Additional search links and keywords for Admin Toolbar Search.
  */
 class SearchLinks {
 
@@ -66,6 +67,15 @@ class SearchLinks {
   protected $config;
 
   /**
+   * The list of extensions available in the Drupal installation.
+   *
+   * @var \Drupal\Core\Extension\ModuleExtensionList
+   *
+   * @see \Drupal\system\Form\ModuleListForm::moduleExtensionList
+   */
+  protected ModuleExtensionList $moduleExtensionList;
+
+  /**
    * Constructs a SearchLinks object.
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
@@ -80,18 +90,21 @@ class SearchLinks {
    *   Cache backend instance to use.
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   Config factory service.
+   * @param \Drupal\Core\Extension\ModuleExtensionList $module_extension_list
+   *   The list of available modules.
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager, ModuleHandlerInterface $module_handler, RouteProviderInterface $route_provider, CacheContextsManager $cache_context_manager, CacheBackendInterface $toolbar_cache, ConfigFactoryInterface $config_factory) {
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, ModuleHandlerInterface $module_handler, RouteProviderInterface $route_provider, CacheContextsManager $cache_context_manager, CacheBackendInterface $toolbar_cache, ConfigFactoryInterface $config_factory, ModuleExtensionList $module_extension_list) {
     $this->entityTypeManager = $entity_type_manager;
     $this->moduleHandler = $module_handler;
     $this->routeProvider = $route_provider;
     $this->cacheContextManager = $cache_context_manager;
     $this->toolbarCache = $toolbar_cache;
     $this->config = $config_factory->get('admin_toolbar_tools.settings');
+    $this->moduleExtensionList = $module_extension_list;
   }
 
   /**
-   * Gets extra links for admin toolbar search feature.
+   * Gets additional links and keywords for the admin toolbar search feature.
    *
    * @return array<mixed>
    *   An array of link data for the JSON used for search.
@@ -119,7 +132,7 @@ class SearchLinks {
     }
 
     $links = [];
-    $cache_tags = [];
+    $cache_tags = ['config:core.extension'];
     $content_entities = $this->getBundleableEntitiesList();
 
     // Adds common links to entities.
@@ -213,7 +226,7 @@ class SearchLinks {
             }
             // Add operation link: Devel.
             if ($this->moduleHandler->moduleExists('devel') && $this->routeExists('entity.' . $content_entity_bundle . '.devel_load')) {
-              $url = Url::fromRoute($route_name = 'entity.' . $content_entity_bundle . '.devel_load', $params);
+              $url = Url::fromRoute('entity.' . $content_entity_bundle . '.devel_load', $params);
               if ($url->access()) {
                 $url_string = $url->toString();
                 $links[] = [
@@ -302,6 +315,35 @@ class SearchLinks {
               'value' => $url_string,
             ];
           }
+        }
+      }
+    }
+
+    /* Add modules configuration links to search suggestions. */
+
+    // The module list needs to be reset so that it can re-scan and include
+    // any new modules that may have been added directly into the filesystem.
+    // Get an array of info files information of installed modules.
+    $enabled_modules = $this->moduleExtensionList->reset()->getAllInstalledInfo();
+
+    // Iterate through each enabled module and add its configuration link.
+    foreach ($enabled_modules as $module_info) {
+
+      // Skip modules that do not have a configuration link or name.
+      if (empty($module_info['configure']) || empty($module_info['name'])) {
+        continue;
+      }
+
+      // Check if the configuration route exists and the user has access to it.
+      if ($this->routeExists($module_info['configure'])) {
+        $url = Url::fromRoute($module_info['configure']);
+        if ($url->access()) {
+          $url_string = $url->toString();
+          // Add the module configuration link to the suggestion links array.
+          $links[] = [
+            'labelRaw' => $module_info['name'],
+            'value' => $url_string,
+          ];
         }
       }
     }

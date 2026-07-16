@@ -18,6 +18,9 @@ include:
       - '/includes/include.drupalci.variables.yml'
       - '/includes/include.drupalci.workflows.yml'
 
+  # GitLab Advanced SAST template for Drupal projects.
+  - template: Security/SAST.gitlab-ci.yml
+
 ################
 # Pipeline configuration variables are defined with default values and descriptions in the file
 # https://git.drupalcode.org/project/gitlab_templates/-/blob/main/includes/include.drupalci.variables.yml
@@ -41,12 +44,28 @@ variables:
   OPT_IN_TEST_PREVIOUS_MAJOR: 1
   OPT_IN_TEST_PREVIOUS_MINOR: 1
   OPT_IN_TEST_NEXT_MINOR: 1
-  OPT_IN_TEST_NEXT_MAJOR: 1
+  # OPT_IN_TEST_NEXT_MAJOR: 1
+  # OPT_IN_TEST_DRUPAL_CMS: 1
   OPT_IN_TEST_MAX_PHP: 1
   # Speed up the execution of the Tests.
   _PHPUNIT_CONCURRENT: 1
+
+  # Enable secret detection job.
+  RUN_JOB_SECRET_DETECTION: 1
+  # Enable upgrade status job (compatibility with next major).
+  # RUN_JOB_UPGRADE_STATUS: 1
+
   # # Convenient for debugging: Enable in issue forks for testing.
   # _SHOW_ENVIRONMENT_VARIABLES: 1
+
+# #
+# # Composer audit: scan composer.lock for known security advisories.
+# #
+# composer-audit:
+#   stage: validate
+#   script:
+#     - composer audit --locked --no-dev
+#   allow_failure: false
 
 #
 # Composer overrides and configuration.
@@ -54,22 +73,22 @@ variables:
 #
 composer:
   after_script:
-    - composer require drupal/project_browser
+    - composer require drupal/automatic_updates drupal/project_browser
 composer (max PHP version):
   after_script:
-    - composer require drupal/project_browser
+    - composer require drupal/automatic_updates drupal/project_browser
 composer (previous minor):
   after_script:
-    - composer require drupal/project_browser
+    - composer require drupal/automatic_updates drupal/project_browser
 composer (next minor):
   after_script:
-    - composer require drupal/project_browser
+    - composer require drupal/automatic_updates drupal/project_browser
 composer (previous major):
   after_script:
-    - composer require drupal/project_browser
+    - composer require drupal/automatic_updates drupal/project_browser
 # composer (next major):
 #   after_script:
-#     - composer require drupal/project_browser
+#     - composer require drupal/automatic_updates drupal/project_browser
 
 # #
 # # CSPELL overrides and configuration.
@@ -112,3 +131,25 @@ phpcs:
 stylelint:
   # Require stylelint to pass.
   allow_failure: false
+
+################
+# Gitlab security: Use GitLab Advanced SAST for comprehensive PHP/JS scanning.
+################
+
+#
+# Enable GitLab Advanced SAST to scan the module's source code.
+#
+gitlab-advanced-sast:
+  variables:
+    GITLAB_ADVANCED_SAST_ENABLED: 'true'
+    # Only scan the block_class module source code.
+    SAST_EXCLUDED_PATHS: "spec, test, tmp, vendor, web"
+
+#
+# SAST overrides: Restrict scan scope to the module's source code only.
+# Exclude vendor/ and web/ directories added by the CI test environment setup
+# to $CI_PROJECT_DIR — they are not part of the module itself.
+#
+semgrep-sast:
+  variables:
+    SAST_EXCLUDED_PATHS: "spec, test, tmp, vendor, web"

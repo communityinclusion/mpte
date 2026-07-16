@@ -140,7 +140,7 @@ class AdminToolbarToolsSettingsFormTest extends BrowserTestBase {
     // Use a regex to check in the response HTML code that the 'Local Tasks' tab
     // and links are displayed with the expected tags, IDs and CSS classes. This
     // also ensures the links have the expected order and the 'is-active' class.
-    $assert->responseMatches('/<div class="' . $local_tasks_toolbar_tab_css_class . ' toolbar-tab">[\r\n ]*<a .*class="toolbar-icon ' . $local_tasks_toolbar_icon_css_class . '.*" id="toolbar-item-admin-toolbar-local-tasks".*>Local Tasks<\/a>[\r\n ]*<div id="toolbar-item-admin-toolbar-local-tasks-tray".*>[\r\n ]*<nav class="toolbar-lining clearfix" role="navigation">[\r\n ]*<ul class="toolbar-menu"><li><a href=".*\/admin\/config\/user-interface\/admin-toolbar">Toolbar settings<\/a><\/li><li><a href=".*\/admin\/config\/user-interface\/admin-toolbar-tools" class="is-active">Tools settings<\/a><\/li><\/ul><\/nav>[\r\n ]*<\/div>/');
+    $assert->responseMatches('/<div class="' . $local_tasks_toolbar_tab_css_class . ' toolbar-tab">[\r\n ]*<a .*class="toolbar-icon ' . $local_tasks_toolbar_icon_css_class . '.*" id="toolbar-item-admin-toolbar-local-tasks".*>Local Tasks<\/a>[\r\n ]*<div id="toolbar-item-admin-toolbar-local-tasks-tray".*>[\r\n ]*<nav class="toolbar-lining clearfix".*>[\r\n ]*<ul class="toolbar-menu"><li><a href=".*\/admin\/config\/user-interface\/admin-toolbar">Toolbar settings<\/a><\/li><li><a href=".*\/admin\/config\/user-interface\/admin-toolbar-tools" class="is-active">Tools settings<\/a><\/li><\/ul><\/nav>[\r\n ]*<\/div>/');
 
   }
 

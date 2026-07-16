@@ -168,7 +168,7 @@ trait AdminToolbarToolsEntityCreationTrait {
         'operations' => [
           'fields',
           'form-display',
-          'display',
+          'display/default',
           'permissions',
           'delete',
         ],
@@ -237,7 +237,7 @@ trait AdminToolbarToolsEntityCreationTrait {
         'operations' => [
           'fields',
           'form-display',
-          'display',
+          'display/default',
           'permissions',
           'delete',
         ],
@@ -423,6 +423,14 @@ trait AdminToolbarToolsEntityCreationTrait {
       unset($this->testEntityTypesExtraLinks['block_content_type']);
       $this->testEntityTypesExtraLinks['comment_type']['add_content_links']['overview_page']['position'] = 2;
       $this->testEntityTypesExtraLinks['media_type']['add_content_links']['overview_page']['position'] = 4;
+    }
+
+    // Provide support for the 'display/default' operation link for 'media_type'
+    // and 'node_type' entity types for Drupal 11.4 and above.
+    if (floatval(\Drupal::VERSION) < 11.4) {
+      // Skip tests for 'user_role' for versions lower than Drupal 11.4.
+      $this->testEntityTypesExtraLinks['media_type']['bundle_links']['operations'][2] = 'display';
+      $this->testEntityTypesExtraLinks['node_type']['bundle_links']['operations'][2] = 'display';
     }
 
     /* Setup users for the tests. */

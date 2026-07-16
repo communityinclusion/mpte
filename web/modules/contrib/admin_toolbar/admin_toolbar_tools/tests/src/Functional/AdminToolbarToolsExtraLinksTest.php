@@ -73,9 +73,9 @@ class AdminToolbarToolsExtraLinksTest extends BrowserTestBase {
    * - Test all extra links added under 'Structure'.
    * - Test all extra links added under 'Content' ('Add content' links).
    * - Test user, roles and permissions related extra links.
-   * - Test custom extra links not tested in other methods.
    * - Test Admin Toolbar Search controller and service class 'SearchLinks'.
    * - Test updating and deleting entity type bundles.
+   * - Test custom extra links not tested in other methods.
    *
    * @return void
    *   Nothing to return.
@@ -95,15 +95,16 @@ class AdminToolbarToolsExtraLinksTest extends BrowserTestBase {
     // Test all user, roles and permissions related extra links.
     $this->assertToolbarMenuExtraLinksUser();
 
-    // Test custom extra links not tested in other methods.
-    $this->assertToolbarMenuExtraLinksCustom();
-
     // Test Admin Toolbar Search controller and service class 'SearchLinks'.
     $this->assertSearchLinksControllerResponse();
 
     // Test updating and deleting entity type bundles.
     // This method should be called last since it modifies entity bundles.
     $this->assertToolbarMenuExtraLinksUpdateDelete();
+
+    // Test custom extra links not tested in other methods. Should be called
+    // last since it modifies the enabled modules by disabling 'field_ui'.
+    $this->assertToolbarMenuExtraLinksCustom();
   }
 
   /**
@@ -191,6 +192,8 @@ class AdminToolbarToolsExtraLinksTest extends BrowserTestBase {
 
             // Special case for taxonomy vocabularies overview link.
             $test_entity_bundle_operation_key = str_replace('overview/', '', $test_entity_bundle_operation);
+            // Special case for media manage display link.
+            $test_entity_bundle_operation_key = str_replace('/default', '', $test_entity_bundle_operation_key);
             // Test the url of the entity bundle operation is found in the
             // menu links in the toolbar with the expected label and position.
             if (!empty(AdminToolbarToolsConstants::ENTITY_BUNDLE_OPERATIONS_LABELS[$test_entity_bundle_operation_key])) {
@@ -269,86 +272,6 @@ class AdminToolbarToolsExtraLinksTest extends BrowserTestBase {
           }
         }
       }
-    }
-  }
-
-  /**
-   * Custom extra links not tested in the main test method.
-   *
-   * Test custom extra links provided by the module that could not be tested in
-   * other methods:
-   * - Test undeletable menus do *not* have a delete link.
-   * - Test disabled views are *not* displayed in menu links.
-   * - Test custom links: 'Media library', 'Files' and 'Used in views'.
-   *
-   * Links are all tested with expected url, label, position and CSS classes.
-   *
-   * @return void
-   *   Nothing to return.
-   *
-   * @throws \Behat\Mink\Exception\ExpectationException
-   *
-   * @see \Drupal\admin_toolbar_tools\Plugin\Derivative\ExtraLinks::getDerivativeDefinitions()
-   */
-  protected function assertToolbarMenuExtraLinksCustom() {
-
-    /* Test undeletable menus do *not* have a delete link. */
-
-    // Undeletable menus defined by Drupal core.
-    $un_deletable_menus = [
-      'account',
-      'admin',
-      'footer',
-      'main',
-      'tools',
-    ];
-    $test_entity_bundle_base_operation = '/' . $this->testEntityTypesExtraLinks['menu']['bundle_links']['base_url'] . '/manage/';
-
-    foreach ($un_deletable_menus as $un_deletable_menu_id) {
-      // Test the menu id is *not* found in the menu links in the toolbar.
-      $this->assertAdminToolbarMenuLinkNotExists($un_deletable_menu_id . '/delete');
-      // Check the 'Add link' exists for undeletable menus.
-      $this->assertAdminToolbarMenuLinkExists($test_entity_bundle_base_operation . $un_deletable_menu_id . '/add', 'Add link', 1);
-    }
-
-    /* Test disabled views are *not* displayed in menu links. */
-
-    // Check disabled views are *not* found in the menu links.
-    $disabled_view_ids = array_keys(\Drupal::entityTypeManager()->getStorage('view')->loadByProperties(['status' => FALSE]));
-    foreach ($disabled_view_ids as $disabled_view_id) {
-      // Check the bundle id of the disabled view is not found in the menu.
-      $this->assertAdminToolbarMenuLinkNotExists($disabled_view_id);
-    }
-
-    /* Test custom extra links are displayed. */
-
-    // Test the custom extra links provided by the module that could not be
-    // tested in the main 'AdminToolbarToolsExtraLinksTest' class.
-    $custom_extra_links = [
-      // Test integration with 'media_library': Check the 'Media library' and
-      // 'Files' links under 'Content'.
-      [
-        'url' => 'admin/content/media-grid',
-        'text' => 'Media library',
-        'position' => 2,
-      ],
-      [
-        'url' => 'admin/content/files',
-        'text' => 'Files',
-        'position' => version_compare(\Drupal::VERSION, '10', '<') ? 3 : 4,
-      ],
-      // Test integration with 'views_ui': Check the 'Used in views' link under
-      // 'Reports'.
-      [
-        'url' => 'admin/reports/fields/views-fields',
-        'text' => 'Used in views',
-      ],
-    ];
-
-    // Check all the custom extra links are found in the admin toolbar menu.
-    foreach ($custom_extra_links as $custom_extra_link) {
-      // Check the custom extra link exists in the menu links in the toolbar.
-      $this->assertAdminToolbarMenuLinkExists($custom_extra_link['url'], $custom_extra_link['text'], $custom_extra_link['position'] ?? 0);
     }
   }
 
@@ -476,6 +399,8 @@ class AdminToolbarToolsExtraLinksTest extends BrowserTestBase {
               $replaced_string = str_replace('/', '\\\\\/', $entity_bundle_id . '/' . $test_entity_bundle_operation);
               // Special case for taxonomy vocabularies overview link.
               $test_entity_bundle_operation_key = str_replace('overview/', '', $test_entity_bundle_operation);
+              // Special case for media manage display link.
+              $test_entity_bundle_operation_key = str_replace('/default', '', $test_entity_bundle_operation_key);
               // Special case for taxonomy vocabularies 'overview' operation:
               // It should not have an operation label.
               $test_entity_bundle_operation_label = empty(AdminToolbarToolsConstants::ENTITY_BUNDLE_OPERATIONS_LABELS[$test_entity_bundle_operation_key]) ? '' : ' \\\\u003E ' . AdminToolbarToolsConstants::ENTITY_BUNDLE_OPERATIONS_LABELS[$test_entity_bundle_operation_key];
@@ -633,6 +558,102 @@ class AdminToolbarToolsExtraLinksTest extends BrowserTestBase {
       // allow absolute or relative paths depending on the site setup.
       $assert_session->responseMatches($test_entity_type_bundle_link_regex);
     }
+  }
+
+  /**
+   * Custom extra links not tested in the main test method.
+   *
+   * Test custom extra links provided by the module that could not be tested in
+   * other methods:
+   * - Test undeletable menus do *not* have a delete link.
+   * - Test disabled views are *not* displayed in menu links.
+   * - Test custom links: 'Media library', 'Files' and 'Used in views'.
+   *
+   * Links are all tested with expected url, label, position and CSS classes.
+   *
+   * This method should be called last since it modifies the enabled modules by
+   * disabling 'field_ui' to test the special parent condition of the 'Used in
+   * views' menu link.
+   *
+   * @return void
+   *   Nothing to return.
+   *
+   * @throws \Behat\Mink\Exception\ExpectationException
+   *
+   * @see \Drupal\admin_toolbar_tools\Plugin\Derivative\ExtraLinks::getDerivativeDefinitions()
+   */
+  protected function assertToolbarMenuExtraLinksCustom() {
+
+    /* Test undeletable menus do *not* have a delete link. */
+
+    // Reload the admin page to ensure the HTML and JS are reloaded.
+    $this->drupalGet('admin');
+
+    // Undeletable menus defined by Drupal core.
+    $un_deletable_menus = [
+      'account',
+      'admin',
+      'footer',
+      'main',
+      'tools',
+    ];
+    $test_entity_bundle_base_operation = '/' . $this->testEntityTypesExtraLinks['menu']['bundle_links']['base_url'] . '/manage/';
+
+    foreach ($un_deletable_menus as $un_deletable_menu_id) {
+      // Test the menu id is *not* found in the menu links in the toolbar.
+      $this->assertAdminToolbarMenuLinkNotExists($un_deletable_menu_id . '/delete');
+      // Check the 'Add link' exists for undeletable menus.
+      $this->assertAdminToolbarMenuLinkExists($test_entity_bundle_base_operation . $un_deletable_menu_id . '/add', 'Add link', 1);
+    }
+
+    /* Test disabled views are *not* displayed in menu links. */
+
+    // Check disabled views are *not* found in the menu links.
+    $disabled_view_ids = array_keys(\Drupal::entityTypeManager()->getStorage('view')->loadByProperties(['status' => FALSE]));
+    foreach ($disabled_view_ids as $disabled_view_id) {
+      // Check the bundle id of the disabled view is not found in the menu.
+      $this->assertAdminToolbarMenuLinkNotExists($disabled_view_id);
+    }
+
+    /* Test custom extra links are displayed. */
+
+    // Test the custom extra links provided by the module that could not be
+    // tested in the main 'AdminToolbarToolsExtraLinksTest' class.
+    $custom_extra_links = [
+      // Test integration with 'media_library': Check the 'Media library' and
+      // 'Files' links under 'Content'.
+      [
+        'url' => 'admin/content/media-grid',
+        'text' => 'Media library',
+        'position' => 2,
+      ],
+      [
+        'url' => 'admin/content/files',
+        'text' => 'Files',
+        'position' => version_compare(\Drupal::VERSION, '10', '<') ? 3 : 4,
+      ],
+      // Test integration with 'views_ui': Check the 'Used in views' link under
+      // 'Reports'.
+      [
+        'url' => 'admin/reports/fields/views-fields',
+        'text' => 'Used in views',
+      ],
+    ];
+
+    // Check all the custom extra links are found in the admin toolbar menu.
+    foreach ($custom_extra_links as $custom_extra_link) {
+      // Check the custom extra link exists in the menu links in the toolbar.
+      $this->assertAdminToolbarMenuLinkExists($custom_extra_link['url'], $custom_extra_link['text'], $custom_extra_link['position'] ?? 0);
+    }
+
+    // Tests special parent condition for the 'Used in views' link: It should be
+    // attached to 'Reports' if the Field UI module is not installed.
+    // Uninstall the Field UI module to check link 'Used in views' is displayed.
+    \Drupal::service('module_installer')->uninstall(['field_ui']);
+    // Reload the user page.
+    $this->drupalGet('user');
+    // Check the custom extra link exists in the menu links in the toolbar.
+    $this->assertAdminToolbarMenuLinkExists($custom_extra_links[2]['url'], $custom_extra_links[2]['text']);
   }
 
 }
